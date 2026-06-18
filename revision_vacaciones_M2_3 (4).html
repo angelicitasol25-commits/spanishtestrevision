@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M2.3 Revision: Holidays in the Past</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f0ede6;color:#2c2c2a;font-size:15px}
+
+header{background:#185FA5;color:white;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:200;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
+header h1{font-size:1.1rem;font-weight:700}
+header p{font-size:0.78rem;opacity:0.85;margin-top:2px}
+.timer-box{background:rgba(255,255,255,0.15);border-radius:8px;padding:0.5rem 1rem;text-align:center;min-width:100px}
+.timer-box .t-label{font-size:0.7rem;opacity:0.8;display:block}
+.timer-box .t-val{font-size:1.4rem;font-weight:700;letter-spacing:0.05em}
+.timer-box.warning{background:rgba(226,75,74,0.4)}
+
+.progress-bar-wrap{background:#0C447C;padding:0.5rem 2rem;display:flex;align-items:center;gap:1rem}
+.progress-bar-track{flex:1;height:6px;background:rgba(255,255,255,0.2);border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;background:#9FE1CB;border-radius:3px;transition:width 0.4s}
+.progress-label{color:white;font-size:0.75rem;white-space:nowrap}
+
+.steps-nav{display:flex;background:white;border-bottom:2px solid #185FA5;overflow-x:auto;padding:0 1rem;position:sticky;top:64px;z-index:190}
+.step-btn{padding:0.55rem 0.9rem;border:none;background:none;cursor:pointer;font-size:0.78rem;color:#888780;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:1px}
+.step-btn .step-num{font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em}
+.step-btn .step-name{font-size:0.8rem}
+.step-btn.active{color:#185FA5;border-bottom-color:#185FA5}
+.step-btn.done{color:#3B6D11}
+.step-btn.done .step-num{color:#639922}
+
+.section{display:none;padding:1.2rem 2rem 5rem;max-width:920px;margin:0 auto}
+.section.active{display:block}
+
+.card{background:white;border-radius:10px;border:0.5px solid #D3D1C7;padding:1.1rem 1.4rem;margin-bottom:1rem}
+.card-title{font-size:0.95rem;color:#185FA5;font-weight:700;margin-bottom:0.25rem}
+.card-instr{font-size:0.82rem;color:#5F5E5A;margin-bottom:0.8rem;background:#F1EFE8;padding:0.45rem 0.7rem;border-radius:6px;line-height:1.5}
+
+.tip{background:#FAEEDA;border-left:3px solid #BA7517;border-radius:0 6px 6px 0;padding:0.6rem 0.9rem;font-size:0.82rem;line-height:1.5;color:#412402;margin:0.6rem 0}
+.tip strong{color:#633806}
+.warn{background:#FCEBEB;border-left:3px solid #E24B4A;border-radius:0 6px 6px 0;padding:0.6rem 0.9rem;font-size:0.82rem;line-height:1.5;color:#501313;margin:0.6rem 0}
+.success{background:#EAF3DE;border-left:3px solid #639922;border-radius:0 6px 6px 0;padding:0.6rem 0.9rem;font-size:0.82rem;line-height:1.5;color:#173404;margin:0.6rem 0}
+
+.vocab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0.8rem;margin-bottom:0.6rem}
+.vocab-group h3{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:#888780;margin-bottom:0.4rem;padding-bottom:0.2rem;border-bottom:1px solid #F1EFE8}
+.v-item{display:flex;justify-content:space-between;align-items:center;padding:0.28rem 0;border-bottom:0.5px solid #F8F6F0;font-size:0.86rem}
+.v-es{font-weight:600}
+.v-en{color:#5F5E5A;font-size:0.78rem}
+.v-en.h{background:#D3D1C7;color:#D3D1C7;border-radius:3px;cursor:pointer;user-select:none;padding:1px 4px}
+.v-en.h:hover{background:#B4B2A9;color:#B4B2A9}
+.v-en.r{cursor:default}
+.small-btn{padding:0.28rem 0.7rem;border:0.5px solid #D3D1C7;border-radius:5px;background:white;cursor:pointer;font-size:0.75rem;color:#5F5E5A}
+.small-btn:hover{background:#F1EFE8}
+
+.vtable{width:100%;border-collapse:collapse;font-size:0.84rem}
+.vtable th{background:#E6F1FB;color:#0C447C;padding:0.42rem 0.7rem;text-align:left;font-weight:700;font-size:0.78rem}
+.vtable td{padding:0.38rem 0.7rem;border-bottom:0.5px solid #F1EFE8}
+.vtable tr:last-child td{border-bottom:none}
+.irr{background:#FAEEDA;font-weight:700}
+
+.q-row{margin-bottom:0.9rem;padding-bottom:0.7rem;border-bottom:0.5px solid #F1EFE8}
+.q-row:last-child{border-bottom:none;margin-bottom:0}
+.q-text{font-size:0.88rem;line-height:1.6;margin-bottom:0.4rem}
+.opts{display:flex;flex-wrap:wrap;gap:0.35rem}
+.opt{padding:0.3rem 0.8rem;border:0.5px solid #B5D4F4;border-radius:20px;background:white;cursor:pointer;font-size:0.82rem;color:#2c2c2a}
+.opt:hover:not(:disabled){background:#E6F1FB}
+.opt.correct{background:#EAF3DE;border-color:#639922;color:#173404;font-weight:700}
+.opt.wrong{background:#FCEBEB;border-color:#E24B4A;color:#501313}
+.opt:disabled{cursor:default}
+.qfb{font-size:0.78rem;min-height:1rem;margin-top:0.25rem}
+.qfb.ok{color:#3B6D11}
+.qfb.no{color:#A32D2D}
+
+.rtext{background:#F1EFE8;border-radius:8px;padding:0.9rem 1.1rem;font-size:0.88rem;line-height:1.85;margin-bottom:0.8rem;border-left:3px solid #185FA5}
+
+.gap-sel{border:none;border-bottom:2px solid #185FA5;background:transparent;font-size:0.88rem;font-weight:700;color:#185FA5;cursor:pointer;padding:0 2px;min-width:75px}
+.gap-sel.c{border-bottom-color:#639922;color:#27500A}
+.gap-sel.w{border-bottom-color:#E24B4A;color:#A32D2D}
+
+.tf-row{display:flex;align-items:flex-start;gap:0.7rem;margin-bottom:0.5rem;padding:0.45rem 0.65rem;background:#F8F6F0;border-radius:6px}
+.tf-text{flex:1;font-size:0.86rem;line-height:1.5}
+.tf-btns{display:flex;gap:0.3rem;flex-shrink:0}
+.tf-btn{padding:0.22rem 0.55rem;border:0.5px solid #D3D1C7;border-radius:4px;cursor:pointer;font-size:0.78rem;background:white;font-weight:700}
+.tf-btn:hover{background:#E6F1FB}
+.tf-btn.correct{background:#EAF3DE;border-color:#639922;color:#173404}
+.tf-btn.wrong{background:#FCEBEB;border-color:#E24B4A;color:#501313}
+
+.classify-area{display:grid;grid-template-columns:repeat(3,1fr);gap:0.6rem;margin-bottom:0.6rem}
+.cl-col{border:1.5px dashed #D3D1C7;border-radius:8px;padding:0.6rem;min-height:80px}
+.cl-col h4{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:#888780;margin-bottom:0.4rem;text-align:center}
+.bank-area{display:flex;flex-wrap:wrap;gap:0.35rem;padding:0.6rem;background:#E6F1FB;border-radius:8px;margin-bottom:0.6rem}
+.bchip{padding:0.25rem 0.65rem;background:white;border:0.5px solid #B5D4F4;border-radius:20px;cursor:pointer;font-size:0.8rem}
+.bchip:hover:not(.placed){background:#185FA5;color:white}
+.bchip.sel{background:#185FA5;color:white}
+.bchip.placed{opacity:0.3;cursor:default;pointer-events:none}
+.dchip{display:inline-block;padding:0.2rem 0.5rem;background:white;border:0.5px solid #9FE1CB;border-radius:20px;font-size:0.78rem;margin:2px;cursor:pointer}
+.dchip:hover{background:#FCEBEB;border-color:#E24B4A}
+.dzone{min-height:50px}
+
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem}
+.ml{background:#E6F1FB;border-radius:6px;padding:0.45rem 0.7rem;font-size:0.84rem;cursor:pointer;border:2px solid transparent}
+.ml.selected{border-color:#185FA5;font-weight:700}
+.ml.matched{background:#EAF3DE;border-color:#639922;cursor:default}
+.ml.wrong-m{background:#FCEBEB;border-color:#E24B4A}
+.mr{background:#FAEEDA;border-radius:6px;padding:0.45rem 0.7rem;font-size:0.84rem;cursor:pointer;border:2px solid transparent}
+.mr.selected{border-color:#BA7517;font-weight:700}
+.mr.matched{background:#EAF3DE;border-color:#639922;cursor:default}
+.mr.wrong-m{background:#FCEBEB;border-color:#E24B4A}
+
+.ltable{width:100%;border-collapse:collapse;font-size:0.83rem}
+.ltable th{background:#185FA5;color:white;padding:0.4rem 0.6rem;font-weight:700;font-size:0.76rem}
+.ltable td{padding:0.35rem 0.6rem;border-bottom:0.5px solid #F1EFE8;vertical-align:middle}
+.ltable tr:nth-child(even) td{background:#F8F6F0}
+.linput{border:none;border-bottom:1.5px solid #185FA5;background:transparent;font-size:0.83rem;width:100%;outline:none;padding:2px}
+.linput.ci{border-bottom-color:#639922;color:#27500A;background:#EAF3DE}
+.linput.wi{border-bottom-color:#E24B4A;color:#A32D2D;background:#FCEBEB}
+
+.vfinput{border:none;border-bottom:1.5px solid #185FA5;background:transparent;font-size:0.86rem;width:90px;outline:none;padding:2px;text-align:center}
+.vfinput.ci{border-bottom-color:#639922;color:#27500A}
+.vfinput.wi{border-bottom-color:#E24B4A;color:#A32D2D}
+
+.dictinput{width:100%;border:0.5px solid #D3D1C7;border-radius:6px;padding:0.4rem 0.7rem;font-size:0.88rem}
+.dictinput.ci{border-color:#639922;background:#EAF3DE}
+.dictinput.wi{border-color:#E24B4A;background:#FCEBEB}
+
+.scramble-sentence{min-height:2.1rem;background:#F1EFE8;border-radius:8px;padding:0.55rem 0.9rem;font-size:0.88rem;line-height:1.9;border:2px dashed #D3D1C7;margin-bottom:0.5rem}
+.scramble-sentence.filled{border-color:#639922}
+.word-tiles{display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.5rem}
+.tile{padding:0.28rem 0.7rem;background:white;border:0.5px solid #185FA5;border-radius:6px;cursor:pointer;font-size:0.84rem;color:#185FA5;font-weight:600}
+.tile:hover{background:#185FA5;color:white}
+.tile.used{opacity:0.3;cursor:default;pointer-events:none}
+.placed-tile{display:inline-block;padding:0.2rem 0.55rem;background:#185FA5;color:white;border-radius:5px;margin:2px;font-size:0.82rem;cursor:pointer}
+.placed-tile:hover{background:#E24B4A}
+
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:white;border-top:0.5px solid #D3D1C7;padding:0.65rem 2rem;display:flex;align-items:center;gap:0.8rem;z-index:200;box-shadow:0 -2px 8px rgba(0,0,0,0.07)}
+.score-display{display:flex;flex-direction:column}
+.score-display .sl{font-size:0.72rem;color:#888780}
+.score-display .sv{font-size:1.05rem;font-weight:700;color:#185FA5}
+.check-btn{padding:0.42rem 1.1rem;background:#185FA5;color:white;border:none;border-radius:6px;cursor:pointer;font-size:0.84rem;font-weight:700}
+.check-btn:hover{background:#0C447C}
+.reset-btn{padding:0.42rem 0.9rem;background:none;border:0.5px solid #D3D1C7;border-radius:6px;cursor:pointer;font-size:0.8rem;color:#5F5E5A}
+.reset-btn:hover{background:#F1EFE8}
+.nav-btns{margin-left:auto;display:flex;gap:0.5rem}
+.nav-btn{padding:0.42rem 1.1rem;border:0.5px solid #185FA5;border-radius:6px;cursor:pointer;font-size:0.84rem;font-weight:700;background:white;color:#185FA5}
+.nav-btn:hover{background:#E6F1FB}
+.nav-btn.next{background:#185FA5;color:white}
+.nav-btn.next:hover{background:#0C447C}
+
+.section-header{display:flex;align-items:center;gap:0.8rem;margin-bottom:1rem;padding-bottom:0.7rem;border-bottom:2px solid #E6F1FB}
+.section-badge{background:#185FA5;color:white;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;flex-shrink:0}
+.section-meta h2{font-size:1rem;font-weight:700;color:#185FA5}
+.section-meta p{font-size:0.78rem;color:#888780}
+.time-pill{background:#FAEEDA;color:#633806;border-radius:20px;padding:0.2rem 0.6rem;font-size:0.72rem;font-weight:700;white-space:nowrap;margin-left:auto}
+
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.7rem;margin:1rem 0}
+.sum-card{background:white;border-radius:8px;border:0.5px solid #D3D1C7;padding:0.7rem;text-align:center}
+.sum-card .sc-num{font-size:1.3rem;font-weight:700;color:#185FA5}
+.sum-card .sc-label{font-size:0.68rem;color:#888780;margin-top:2px}
+.big-score{text-align:center;padding:1.5rem;background:white;border-radius:12px;border:2px solid #185FA5;margin-bottom:1rem}
+.big-score .bs-num{font-size:3rem;font-weight:700;color:#185FA5}
+.big-score .bs-label{font-size:0.85rem;color:#5F5E5A}
+
+.extra-banner{background:#E6F1FB;border-radius:8px;padding:0.5rem 0.8rem;font-size:0.78rem;color:#0C447C;margin-bottom:0.8rem;text-align:center;font-weight:600}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🌴 M2.3 Revision — Holidays in the Past</h1>
+    <p>Year 9 • Work through every section • There's always more practice if you finish early</p>
+  </div>
+  <div class="timer-box" id="timerBox">
+    <span class="t-label">⏱ Time left</span>
+    <span class="t-val" id="timerVal">40:00</span>
+  </div>
+</header>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+  <span class="progress-label" id="progressLabel">Section 1 of 7</span>
+</div>
+
+<div class="steps-nav" id="stepsNav">
+  <button class="step-btn active" onclick="goSection(0,this)"><span class="step-num">Step 1</span><span class="step-name">📚 Vocab A</span></button>
+  <button class="step-btn" onclick="goSection(1,this)"><span class="step-num">Step 2</span><span class="step-name">🔤 Verbs</span></button>
+  <button class="step-btn" onclick="goSection(2,this)"><span class="step-num">Step 3</span><span class="step-name">🔗 Matching</span></button>
+  <button class="step-btn" onclick="goSection(3,this)"><span class="step-num">Step 4</span><span class="step-name">📖 Reading A</span></button>
+  <button class="step-btn" onclick="goSection(4,this)"><span class="step-num">Step 5</span><span class="step-name">📖 Reading B</span></button>
+  <button class="step-btn" onclick="goSection(5,this)"><span class="step-num">Step 6</span><span class="step-name">🎧 Listening</span></button>
+  <button class="step-btn" onclick="goSection(6,this)"><span class="step-num">Step 7</span><span class="step-name">🏆 Results</span></button>
+</div>
+<!-- ============================================================ -->
+<!-- SECTION 1: VOCABULARY -->
+<!-- ============================================================ -->
+<div id="sec0" class="section active">
+  <div class="section-header">
+    <div class="section-badge">1</div>
+    <div class="section-meta"><h2>Vocabulary warm-up</h2><p>Five vocabulary sets, then four practice activities. Don't rush — there's a lot here!</p></div>
+    <span class="time-pill">⏱ Take your time</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Set 1 — Countries & destinations</div>
+    <div class="card-instr">Cover the right-hand column with your hand. Try to say the English translation OUT LOUD before clicking to check.</div>
+    <div class="vocab-grid" id="vg-countries"></div>
+    <div style="display:flex;gap:0.4rem;margin-top:0.5rem"><button class="small-btn" onclick="revGroup('countries')">Reveal all</button><button class="small-btn" onclick="hideGroup('countries')">Hide all</button></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Set 2 — Transport</div>
+    <div class="card-instr">Remember: always use <em>en</em> + transport in Spanish (except <em>a pie</em> = on foot).</div>
+    <div class="vocab-grid" id="vg-transport"></div>
+    <div style="display:flex;gap:0.4rem;margin-top:0.5rem"><button class="small-btn" onclick="revGroup('transport')">Reveal all</button><button class="small-btn" onclick="hideGroup('transport')">Hide all</button></div>
+    <div class="tip">💡 <strong>Remember:</strong> <em>Fui en avión</em> (I went by plane) — never "por avión".</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Set 3 — Holiday activities (past tense)</div>
+    <div class="card-instr">These are all in the <em>yo</em> (I) preterite form, exactly as they appear in exam texts.</div>
+    <div class="vocab-grid" id="vg-activities"></div>
+    <div style="display:flex;gap:0.4rem;margin-top:0.5rem"><button class="small-btn" onclick="revGroup('activities')">Reveal all</button><button class="small-btn" onclick="hideGroup('activities')">Hide all</button></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Set 4 — Opinions & reactions</div>
+    <div class="card-instr">These phrases show how someone felt. They're essential for understanding texts and audio.</div>
+    <div class="vocab-grid" id="vg-opinions"></div>
+    <div style="display:flex;gap:0.4rem;margin-top:0.5rem"><button class="small-btn" onclick="revGroup('opinions')">Reveal all</button><button class="small-btn" onclick="hideGroup('opinions')">Hide all</button></div>
+    <div class="tip">💡 <strong>Watch out:</strong> "Lo pasé..." is past tense, but "me gusta / me encanta / odio" stay PRESENT tense — they describe general feelings, not what happened on the trip.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Set 5 — Time & people</div>
+    <div class="card-instr">These phrases tell you WHEN the holiday happened and WHO was involved — key listening clues.</div>
+    <div class="vocab-grid" id="vg-time"></div>
+    <div style="display:flex;gap:0.4rem;margin-top:0.5rem"><button class="small-btn" onclick="revGroup('time')">Reveal all</button><button class="small-btn" onclick="hideGroup('time')">Hide all</button></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity A — Classify the words (Round 1)</div>
+    <div class="card-instr">Click a word from the blue bank to select it, then click the correct column. Click a placed word to remove it.</div>
+    <div class="bank-area" id="clBank"></div>
+    <div class="classify-area">
+      <div class="cl-col"><h4>🌍 Country / Place</h4><div class="dzone" id="cz-dest"></div></div>
+      <div class="cl-col"><h4>🚆 Transport</h4><div class="dzone" id="cz-trans"></div></div>
+      <div class="cl-col"><h4>⭐ Opinion</h4><div class="dzone" id="cz-opin"></div></div>
+    </div>
+    <div style="display:flex;gap:0.5rem"><button class="check-btn" onclick="checkClassify()">Check</button><button class="reset-btn" onclick="resetClassify()">Reset</button></div>
+    <p id="clFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity B — Classify the words (Round 2 — different words!)</div>
+    <div class="card-instr">Same task, new vocabulary. The more rounds you do, the better it sticks!</div>
+    <div class="bank-area" id="clBank2"></div>
+    <div class="classify-area">
+      <div class="cl-col"><h4>🌍 Country / Place</h4><div class="dzone" id="cz2-dest"></div></div>
+      <div class="cl-col"><h4>🚆 Transport</h4><div class="dzone" id="cz2-trans"></div></div>
+      <div class="cl-col"><h4>⭐ Opinion</h4><div class="dzone" id="cz2-opin"></div></div>
+    </div>
+    <div style="display:flex;gap:0.5rem"><button class="check-btn" onclick="checkClassify2()">Check</button><button class="reset-btn" onclick="resetClassify2()">Reset</button></div>
+    <p id="clFb2" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity C — Opinion, Activity or Time? (10 sentences)</div>
+    <div class="card-instr">Each sentence is an Opinion, an Activity, or a Time expression. Click the correct label. Exam Level 2 format.</div>
+    <div id="oatContainer"></div>
+    <button class="check-btn" onclick="checkOAT()">Check all</button>
+    <p id="oatFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity D — Opinion, Activity or Time? (Round 2 — 8 more sentences)</div>
+    <div class="card-instr">More practice with new sentences. Keep going — repetition helps you remember!</div>
+    <div id="oat2Container"></div>
+    <button class="check-btn" onclick="checkOAT2()">Check all</button>
+    <p id="oat2Fb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity E — Picture match: holiday activities</div>
+    <div class="card-instr">Click a Spanish sentence, then click the matching picture. Correct pairs turn green.</div>
+    <div style="background:#FAEEDA;border-radius:8px;padding:0.6rem;display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.7rem" id="sentBank"></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem" id="picGrid"></div>
+    <p id="picFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity F — Quick-fire vocabulary quiz (12 questions)</div>
+    <div class="card-instr">Rapid multiple choice — choose the correct English translation as fast as you can.</div>
+    <div id="qfContainer"></div>
+    <button class="check-btn" onclick="checkQF()">Check all</button>
+    <p id="qfFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+</div>
+<!-- ============================================================ -->
+<!-- SECTION 2: VERBS -->
+<!-- ============================================================ -->
+<div id="sec1" class="section">
+  <div class="section-header">
+    <div class="section-badge">2</div>
+    <div class="section-meta"><h2>Verb forms — preterite tense</h2><p>The most important grammar topic. Study carefully, then complete all five activities.</p></div>
+    <span class="time-pill">⏱ Take your time</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔴 Irregular: IR and SER share the same forms!</div>
+    <div class="warn">⚠️ <strong>Key fact:</strong> <em>fui / fue / fuimos / fueron</em> can mean "went" OR "was/were" — context decides.<br><strong>Fui a España</strong> = I went to Spain &nbsp;|&nbsp; <strong>Fue genial</strong> = It was great</div>
+    <table class="vtable">
+      <tr><th>Person</th><th>IR / SER form</th><th>Meaning (IR)</th><th>Meaning (SER)</th></tr>
+      <tr class="irr"><td><strong>yo</strong></td><td>fui</td><td>I went</td><td>I was</td></tr>
+      <tr class="irr"><td><strong>tú</strong></td><td>fuiste</td><td>you went</td><td>you were</td></tr>
+      <tr class="irr"><td><strong>él/ella</strong></td><td>fue</td><td>he/she went</td><td>it was</td></tr>
+      <tr class="irr"><td><strong>nosotros</strong></td><td>fuimos</td><td>we went</td><td>we were</td></tr>
+      <tr class="irr"><td><strong>vosotros</strong></td><td>fuisteis</td><td>you (pl) went</td><td>you (pl) were</td></tr>
+      <tr class="irr"><td><strong>ellos</strong></td><td>fueron</td><td>they went</td><td>they were</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🟢 Regular -AR verbs — full conjugation table</div>
+    <div class="tip">💡 <strong>Pattern:</strong> remove <em>-ar</em>, add: <strong>-é, -aste, -ó, -amos, -asteis, -aron</strong></div>
+    <table class="vtable">
+      <tr><th>Infinitive</th><th>yo</th><th>tú</th><th>él/ella</th><th>nosotros</th><th>ellos</th></tr>
+      <tr><td>pasar</td><td>pasé</td><td>pasaste</td><td>pasó</td><td>pasamos</td><td>pasaron</td></tr>
+      <tr><td>tomar</td><td>tomé</td><td>tomaste</td><td>tomó</td><td>tomamos</td><td>tomaron</td></tr>
+      <tr><td>visitar</td><td>visité</td><td>visitaste</td><td>visitó</td><td>visitamos</td><td>visitaron</td></tr>
+      <tr><td>bailar</td><td>bailé</td><td>bailaste</td><td>bailó</td><td>bailamos</td><td>bailaron</td></tr>
+      <tr><td>descansar</td><td>descansé</td><td>descansaste</td><td>descansó</td><td>descansamos</td><td>descansaron</td></tr>
+      <tr><td>escuchar</td><td>escuché</td><td>escuchaste</td><td>escuchó</td><td>escuchamos</td><td>escucharon</td></tr>
+      <tr><td>mandar</td><td>mandé</td><td>mandaste</td><td>mandó</td><td>mandamos</td><td>mandaron</td></tr>
+      <tr><td>pintar</td><td>pinté</td><td>pintaste</td><td>pintó</td><td>pintamos</td><td>pintaron</td></tr>
+      <tr><td>montar</td><td>monté</td><td>montaste</td><td>montó</td><td>montamos</td><td>montaron</td></tr>
+      <tr><td>nadar</td><td>nadé</td><td>nadaste</td><td>nadó</td><td>nadamos</td><td>nadaron</td></tr>
+    </table>
+    <div class="warn" style="margin-top:0.6rem">⚠️ <strong>Spelling-change verbs:</strong> <em>sacar → saqué</em> (not "sacé"), <em>jugar → jugué</em> (not "jugé"). The spelling changes to keep the sound — but only in the <em>yo</em> form!</div>
+    <table class="vtable" style="margin-top:0.5rem">
+      <tr><th>Infinitive</th><th>yo</th><th>él/ella</th><th>nosotros</th><th>ellos</th></tr>
+      <tr class="irr"><td>sacar</td><td>saqué</td><td>sacó</td><td>sacamos</td><td>sacaron</td></tr>
+      <tr class="irr"><td>jugar</td><td>jugué</td><td>jugó</td><td>jugamos</td><td>jugaron</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Model sentences — colour-coded</div>
+    <div class="rtext" style="line-height:2.2">
+      El <span style="background:#E6F1FB;border-radius:3px;padding:1px 4px">verano pasado</span> <span style="background:#FAEEDA;border-radius:3px;padding:1px 4px;font-weight:700">fui</span> a <span style="background:#EAF3DE;border-radius:3px;padding:1px 4px">Francia</span> con mi familia.<br>
+      <span style="background:#FAEEDA;border-radius:3px;padding:1px 4px;font-weight:700">Fuimos</span> en <span style="background:#EAF3DE;border-radius:3px;padding:1px 4px">avión</span>. <span style="background:#FAEEDA;border-radius:3px;padding:1px 4px;font-weight:700">Pasé</span> dos semanas allí.<br>
+      <span style="background:#FAEEDA;border-radius:3px;padding:1px 4px;font-weight:700">Tomé</span> el sol, <span style="background:#FAEEDA;border-radius:3px;padding:1px 4px;font-weight:700">visité</span> monumentos y <span style="background:#FAEEDA;border-radius:3px;padding:1px 4px;font-weight:700">fui</span> de excursión.<br>
+      Me <span style="background:#FCEBEB;border-radius:3px;padding:1px 4px">encanta</span> ir de vacaciones. ¡Lo <span style="background:#FAEEDA;border-radius:3px;padding:1px 4px;font-weight:700">pasé</span> fenomenal!
+    </div>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;font-size:0.76rem;margin-top:0.4rem">
+      <span style="background:#E6F1FB;border-radius:3px;padding:2px 6px">🔵 Time</span><span style="background:#FAEEDA;border-radius:3px;padding:2px 6px">🟡 Past verb</span><span style="background:#EAF3DE;border-radius:3px;padding:2px 6px">🟢 Place/transport</span><span style="background:#FCEBEB;border-radius:3px;padding:2px 6px">🔴 Present opinion</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity G — Complete the verb table (Round 1: 10 verbs)</div>
+    <div class="card-instr">Type the correct preterite form for each. Use the tables above if you need help.</div>
+    <div id="vfTable"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.7rem"><button class="check-btn" onclick="checkVF()">Check</button><button class="reset-btn" onclick="buildVF()">Reset</button></div>
+    <p id="vfFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity H — Complete the verb table (Round 2: 10 more verbs)</div>
+    <div class="card-instr">Different combinations of verbs and persons. Keep practising the patterns!</div>
+    <div id="vf2Table"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.7rem"><button class="check-btn" onclick="checkVF2()">Check</button><button class="reset-btn" onclick="buildVF2()">Reset</button></div>
+    <p id="vf2Fb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity I — Choose the correct verb form (8 sentences)</div>
+    <div class="card-instr">Click the correct option to complete each sentence — same format as the reading exam.</div>
+    <div id="vcContainer"></div>
+    <button class="check-btn" onclick="checkVC()">Check all</button>
+    <p id="vcFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity J — Choose the correct verb form (Round 2: 8 more sentences)</div>
+    <div class="card-instr">More sentences, more practice. Watch carefully for the subject of each sentence!</div>
+    <div id="vc2Container"></div>
+    <button class="check-btn" onclick="checkVC2()">Check all</button>
+    <p id="vc2Fb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity K — Translate the verb (typing practice)</div>
+    <div class="card-instr">Type the Spanish preterite verb form for each English phrase. Check spelling carefully, including accents!</div>
+    <div id="trVerbContainer"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.7rem"><button class="check-btn" onclick="checkTrVerb()">Check</button><button class="reset-btn" onclick="buildTrVerb()">Reset</button></div>
+    <p id="trVerbFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+</div>
+<!-- ============================================================ -->
+<!-- SECTION 3: MATCHING -->
+<!-- ============================================================ -->
+<div id="sec2" class="section">
+  <div class="section-header">
+    <div class="section-badge">3</div>
+    <div class="section-meta"><h2>Matching — Spanish to English</h2><p>Six matching-style activities to build speed and recognition.</p></div>
+    <span class="time-pill">⏱ Take your time</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity L — Match activities (Round 1)</div>
+    <div class="card-instr">Click a blue card on the LEFT, then the matching yellow card on the RIGHT. Correct pairs turn green.</div>
+    <div class="match-grid" id="mg1"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.7rem"><button class="check-btn" onclick="checkMatch('mg1',mp1,'mg1Fb')">Check</button><button class="reset-btn" onclick="buildMatch('mg1',mp1,'mg1Fb')">Reset</button></div>
+    <p id="mg1Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity M — Match opinions (Round 1)</div>
+    <div class="card-instr">Same task — opinion phrases this time.</div>
+    <div class="match-grid" id="mg2"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.7rem"><button class="check-btn" onclick="checkMatch('mg2',mp2,'mg2Fb')">Check</button><button class="reset-btn" onclick="buildMatch('mg2',mp2,'mg2Fb')">Reset</button></div>
+    <p id="mg2Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity N — Match countries & places (Round 1)</div>
+    <div class="card-instr">Match the Spanish country/place name to its English equivalent.</div>
+    <div class="match-grid" id="mg3"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.7rem"><button class="check-btn" onclick="checkMatch('mg3',mp3,'mg3Fb')">Check</button><button class="reset-btn" onclick="buildMatch('mg3',mp3,'mg3Fb')">Reset</button></div>
+    <p id="mg3Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity O — Match activities (Round 2 — new words)</div>
+    <div class="card-instr">A fresh set of activity phrases to match.</div>
+    <div class="match-grid" id="mg4"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.7rem"><button class="check-btn" onclick="checkMatch('mg4',mp4,'mg4Fb')">Check</button><button class="reset-btn" onclick="buildMatch('mg4',mp4,'mg4Fb')">Reset</button></div>
+    <p id="mg4Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity P — Match opinions (Round 2 — new words)</div>
+    <div class="card-instr">More opinion phrases — these come up constantly in the exam.</div>
+    <div class="match-grid" id="mg5"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.7rem"><button class="check-btn" onclick="checkMatch('mg5',mp5,'mg5Fb')">Check</button><button class="reset-btn" onclick="buildMatch('mg5',mp5,'mg5Fb')">Reset</button></div>
+    <p id="mg5Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity Q — Picture-to-sentence match (Round 2)</div>
+    <div class="card-instr">Click a Spanish sentence, then the matching emoji card. A different set from Section 1!</div>
+    <div style="background:#FAEEDA;border-radius:8px;padding:0.6rem;display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.7rem" id="sentBank2"></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0.6rem" id="picGrid2"></div>
+    <p id="picFb2" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity R — Sentence unscramble (Round 1: 4 sentences)</div>
+    <div class="card-instr">Click the word tiles in the correct order to build each sentence. Click a placed tile to remove it.</div>
+    <div id="scrambleContainer1"></div>
+  </div>
+</div>
+<!-- ============================================================ -->
+<!-- SECTION 4: READING A -->
+<!-- ============================================================ -->
+<div id="sec3" class="section">
+  <div class="section-header">
+    <div class="section-badge">4</div>
+    <div class="section-meta"><h2>Reading comprehension A</h2><p>Three texts with different question types. Read carefully before answering.</p></div>
+    <span class="time-pill">⏱ Take your time</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Text 1 — True or False?</div>
+    <div class="card-instr">Read the dialogue. Click TRUE ✓ or FALSE ✗ for each statement, based only on what the text says.</div>
+    <div class="rtext">
+      <strong>— ¿Te gusta ir de vacaciones, Pablo?</strong><br>
+      — Sí, ¡me encanta! El año pasado fui a Irlanda con mis padres y mi hermana. Fuimos en barco desde Liverpool. No me gusta el avión — ¡es horrible! Pasé dos semanas allí.<br><br>
+      <strong>— ¿Qué hiciste en Irlanda?</strong><br>
+      — Tomé el sol, monté en bicicleta y fui de excursión a las montañas. Por la noche escuché música tradicional irlandesa. ¡Lo pasé genial!
+    </div>
+    <div id="tf1"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="check-btn" onclick="checkTF('tf1','tf1Fb',tf1d)">Check</button><button class="reset-btn" onclick="buildTF('tf1',tf1d)">Reset</button></div>
+    <p id="tf1Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Text 2 — Multiple choice (a, b or c)</div>
+    <div class="card-instr">Read carefully — wrong options are deliberately similar to the text!</div>
+    <div class="rtext">
+      Hola, me llamo Elena. Normalmente voy a Francia de vacaciones con mi familia, pero el invierno pasado fui a Alemania con mi mejor amiga. Fuimos en tren porque no me gusta nada el avión. Fuimos a Hamburgo — está en el norte de Alemania. Pasé diez días allí.<br><br>
+      Por las mañanas visité monumentos y saqué fotos. Me gusta mucho la fotografía. Por las tardes fui de compras con mi amiga. Por las noches fuimos a restaurantes — la comida alemana es estupenda. ¡Lo pasé fenomenal y quiero volver el año que viene!
+    </div>
+    <div id="mcq1"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="check-btn" onclick="checkMCQ('mcq1','mcq1Fb',mcq1d)">Check all</button><button class="reset-btn" onclick="buildMCQ('mcq1',mcq1d)">Reset</button></div>
+    <p id="mcq1Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Text 3 — Fill the gaps (dropdown)</div>
+    <div class="card-instr">Choose the correct word for each gap. Exam Level 4 cloze format.</div>
+    <div class="rtext" id="gf1"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="check-btn" onclick="checkGF('gf1','gf1Fb',gf1d)">Check</button><button class="reset-btn" onclick="buildGF('gf1',gf1d)">Reset</button></div>
+    <p id="gf1Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Text 4 — True, False, or Not Mentioned?</div>
+    <div class="tip">💡 "Not Mentioned" means the text says nothing about it — NOT that it's false!</div>
+    <div class="rtext">
+      Me llamo Fernán. Normalmente en verano voy a Cuba con mis amigos. Me encanta Cuba porque hace mucho calor y puedo nadar y jugar al voleibol en la playa. Pero el verano pasado fui a Grecia con mis padres. Fuimos en coche porque no me gusta nada el avión. ¡Fue horrible porque pasé un día completo en el coche!<br><br>
+      En Grecia tomé el sol y pinté mucho — me encanta pintar. También monté en bicicleta y fui de excursión a las islas. Por la noche mandé mensajes y escuché música electrónica. Lo pasé bien, pero prefiero Cuba.
+    </div>
+    <div id="tfnm1"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="check-btn" onclick="checkTFNM()">Check</button><button class="reset-btn" onclick="buildTFNM()">Reset</button></div>
+    <p id="tfnmFb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Text 5 — Match the question to the right person</div>
+    <div class="card-instr">Read the three short texts, then match each question to the person it describes.</div>
+    <div class="rtext" style="font-size:0.85rem">
+      <strong>Marta:</strong> El año pasado fui a Cuba con mi familia. Fuimos en avión. Nadé en el mar y bailé salsa. ¡Lo pasé fenomenal!<br><br>
+      <strong>Iker:</strong> El verano pasado fui a Escocia solo. Fui en tren. Visité castillos y saqué muchas fotos. Fue un poco aburrido.<br><br>
+      <strong>Sara:</strong> El invierno pasado fui a Italia con mi mejor amiga. Fuimos en coche. Fui de compras y comí mucha pasta. ¡Fue estupendo!
+    </div>
+    <div id="personMatchContainer"></div>
+    <button class="check-btn" onclick="checkPersonMatch()">Check all</button>
+    <p id="personMatchFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+</div>
+<!-- ============================================================ -->
+<!-- SECTION 5: READING B -->
+<!-- ============================================================ -->
+<div id="sec4" class="section">
+  <div class="section-header">
+    <div class="section-badge">5</div>
+    <div class="section-meta"><h2>Reading comprehension B</h2><p>More reading practice with longer texts — same exam styles, fresh content.</p></div>
+    <span class="time-pill">⏱ Take your time</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Text 6 — Multiple choice (longer text)</div>
+    <div class="card-instr">Read carefully. Six questions follow the order of the text.</div>
+    <div class="rtext">
+      Hola, soy Ana. Me encanta viajar. Generalmente voy a la playa en verano, pero el verano pasado hice algo diferente. Fui a Berlín, Alemania, con mis amigos del colegio — fuimos cinco en total. Fuimos en tren porque me parece más cómodo que el avión. Pasé una semana allí.<br><br>
+      Por las mañanas visitamos museos y monumentos. Por las tardes fuimos de compras o descansamos en los parques. Por las noches salimos a restaurantes y discotecas. Bailé mucho y tomé muchas fotos. Me gusta mucho la fotografía.<br><br>
+      Lo pasé bomba. ¡Quiero volver a Berlín el año que viene!
+    </div>
+    <div id="mcq2"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="check-btn" onclick="checkMCQ('mcq2','mcq2Fb',mcq2d)">Check all</button><button class="reset-btn" onclick="buildMCQ('mcq2',mcq2d)">Reset</button></div>
+    <p id="mcq2Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Text 7 — Gap fill (Round 2)</div>
+    <div class="card-instr">A new cloze passage. Choose the correct word for each gap.</div>
+    <div class="rtext" id="gf2"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="check-btn" onclick="checkGF('gf2','gf2Fb',gf2d)">Check</button><button class="reset-btn" onclick="buildGF('gf2',gf2d)">Reset</button></div>
+    <p id="gf2Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Text 8 — True or False? (Round 2)</div>
+    <div class="card-instr">A new text. Read carefully and decide True or False for each statement.</div>
+    <div class="rtext">
+      Hola, me llamo Diego. El año pasado fui a Portugal con mi clase del colegio — fuimos veinte estudiantes y dos profesores. Fuimos en autocar. El viaje fue muy largo, ¡seis horas! Pasé cuatro días en Lisboa.<br><br>
+      Visitamos monumentos históricos y un castillo muy famoso. También fuimos a la playa, pero no nadé porque el agua estaba muy fría. Por las noches jugamos a juegos de mesa en el hotel. No fui de compras porque no tenía mucho dinero. En general, lo pasé bien, aunque el autocar fue un poco aburrido.
+    </div>
+    <div id="tf2"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="check-btn" onclick="checkTF('tf2','tf2Fb',tf2d)">Check</button><button class="reset-btn" onclick="buildTF('tf2',tf2d)">Reset</button></div>
+    <p id="tf2Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📖 Text 9 — Answer in English (short answer)</div>
+    <div class="card-instr">Read the text, then type short answers in English. You don't need full sentences — just the key information.</div>
+    <div class="rtext">
+      Me llamo Valentina. El verano pasado fui de vacaciones a México con mi madre y mi hermano pequeño. Fuimos en avión — el vuelo duró doce horas. Pasé tres semanas en Cancún. Tomé el sol todos los días, nadé en el mar y comí mucho guacamole. También fui de excursión a unas ruinas mayas muy antiguas, ¡fue increíble! Por las noches escuché música mexicana en la plaza del pueblo. Mi parte favorita fue la excursión — ¡fue mi actividad preferida! En general, lo pasé fenomenal.
+    </div>
+    <div id="shortAnsContainer"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.7rem"><button class="check-btn" onclick="checkShortAns()">Check</button><button class="reset-btn" onclick="buildShortAns()">Reset</button></div>
+    <p id="shortAnsFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity S — Spot the error! (6 sentences)</div>
+    <div class="card-instr">Each sentence contains ONE mistake. Choose the correct version. Think about verb forms, prepositions, and vocabulary.</div>
+    <div id="errorContainer"></div>
+    <button class="check-btn" onclick="checkErrors()">Check all</button>
+    <p id="errorFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Activity T — Sentence unscramble (Round 2: 4 more sentences)</div>
+    <div class="card-instr">More sentence building — different sentences from Section 3.</div>
+    <div id="scrambleContainer2"></div>
+  </div>
+</div>
+<!-- ============================================================ -->
+<!-- SECTION 6: LISTENING -->
+<!-- ============================================================ -->
+<div id="sec5" class="section">
+  <div class="section-header">
+    <div class="section-badge">6</div>
+    <div class="section-meta"><h2>Listening preparation</h2><p>Reference tables, strategies, and five listening-style practice activities.</p></div>
+    <span class="time-pill">⏱ Take your time</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Quick reference — what to listen for</div>
+    <div class="card-instr">Study these tables carefully — they cover everything tested in the listening exam.</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0.8rem">
+      <div>
+        <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:#888780;font-weight:700;margin-bottom:0.3rem">¿Dónde? (Where?)</p>
+        <table class="vtable"><tr><th>Spanish</th><th>English</th></tr>
+          <tr><td>Escocia</td><td>Scotland</td></tr><tr><td>Irlanda</td><td>Ireland</td></tr>
+          <tr><td>Gales</td><td>Wales</td></tr><tr><td>Francia</td><td>France</td></tr>
+          <tr><td>Italia</td><td>Italy</td></tr><tr><td>Grecia</td><td>Greece</td></tr>
+          <tr><td>Cuba</td><td>Cuba</td></tr><tr><td>México</td><td>Mexico</td></tr>
+          <tr><td>Argentina</td><td>Argentina</td></tr><tr><td>Portugal</td><td>Portugal</td></tr>
+          <tr><td>Pakistán</td><td>Pakistan</td></tr><tr><td>Alemania</td><td>Germany</td></tr>
+        </table>
+      </div>
+      <div>
+        <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:#888780;font-weight:700;margin-bottom:0.3rem">¿Cómo? (How?)</p>
+        <table class="vtable"><tr><th>Spanish</th><th>English</th></tr>
+          <tr><td>en avión ✈️</td><td>by plane</td></tr><tr><td>en tren 🚂</td><td>by train</td></tr>
+          <tr><td>en coche 🚗</td><td>by car</td></tr><tr><td>en barco 🚢</td><td>by boat</td></tr>
+          <tr><td>en autocar 🚌</td><td>by coach</td></tr><tr><td>en bicicleta 🚲</td><td>by bike</td></tr>
+          <tr><td>a pie 🚶</td><td>on foot</td></tr>
+        </table>
+        <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:#888780;font-weight:700;margin-bottom:0.3rem;margin-top:0.6rem">¿Con quién?</p>
+        <table class="vtable"><tr><th>Spanish</th><th>English</th></tr>
+          <tr><td>con mi familia</td><td>with my family</td></tr>
+          <tr><td>con mis padres</td><td>with my parents</td></tr>
+          <tr><td>con mis amigos</td><td>with my friends</td></tr>
+          <tr><td>con mi mejor amigo/a</td><td>with my best friend</td></tr>
+          <tr><td>con mi hermano/a</td><td>with my brother/sister</td></tr>
+          <tr><td>solo/a</td><td>alone</td></tr>
+        </table>
+      </div>
+      <div>
+        <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:#888780;font-weight:700;margin-bottom:0.3rem">Opinions</p>
+        <table class="vtable"><tr><th>Spanish</th><th>English</th></tr>
+          <tr><td>fue genial / guay</td><td>it was great / cool</td></tr>
+          <tr><td>fue bomba / estupendo</td><td>it was brilliant</td></tr>
+          <tr><td>fue fenomenal</td><td>it was fantastic</td></tr>
+          <tr><td>lo pasé bien</td><td>I had a good time</td></tr>
+          <tr><td>lo pasé mal</td><td>I had a bad time</td></tr>
+          <tr><td>fue horrible</td><td>it was horrible</td></tr>
+          <tr><td>fue aburrido</td><td>it was boring</td></tr>
+          <tr><td>fue un desastre</td><td>it was a disaster</td></tr>
+        </table>
+        <p style="font-size:0.72rem;text-transform:uppercase;letter-spacing:0.05em;color:#888780;font-weight:700;margin-bottom:0.3rem;margin-top:0.6rem">¿Cuánto tiempo?</p>
+        <table class="vtable"><tr><th>Spanish</th><th>English</th></tr>
+          <tr><td>un día</td><td>one day</td></tr><tr><td>una semana</td><td>one week</td></tr>
+          <tr><td>dos semanas</td><td>two weeks</td></tr><tr><td>diez días</td><td>ten days</td></tr>
+          <tr><td>quince días</td><td>fifteen days</td></tr><tr><td>un mes</td><td>one month</td></tr>
+        </table>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:0.8rem">
+      <div class="tip">📖 <strong>Before you listen:</strong> Read ALL questions first — know what to listen for.</div>
+      <div class="warn">⚠️ <strong>Beware negatives:</strong> <em>no, nunca, tampoco</em> change the meaning completely!</div>
+      <div class="tip">🔢 <strong>Answers come in order:</strong> Don't jump ahead — move on if you miss one.</div>
+      <div class="warn">⚠️ <strong>Distractor trap:</strong> Speakers sometimes mention something then say they DIDN'T do it.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎧 Activity U — Listening-style MCQ (transcript 1)</div>
+    <div class="card-instr">Read the transcript as if you were listening. Then answer the questions.</div>
+    <div class="rtext" style="font-style:italic">
+      🎙 <strong>[Carlos talking about his holidays]</strong><br><br>
+      "El verano pasado fui a Italia con mis padres. Fuimos en autocar — fue horrible, muy largo. Primero fuimos a Bari, en el sur de Italia. Allí tomé el sol y fui a la playa. También visité monumentos, pero fue un desastre — ¡odio visitar monumentos! Por la noche fui a la discoteca y bailé. Luego fuimos a Nápoles. Allí fui de compras. Por la noche fui a un restaurante italiano — ¡fue genial! La comida italiana es estupenda."
+    </div>
+    <div id="lmcq"></div>
+    <button class="check-btn" onclick="checkLMCQ()">Check all</button>
+    <p id="lmcqFb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎧 Activity V — Complete the listening table (4 speakers)</div>
+    <div class="card-instr">Read the four transcripts. Fill in the table in English using key words.</div>
+    <div class="rtext" style="font-style:italic;font-size:0.84rem">
+      🎙 <strong>Laura:</strong> "El invierno pasado fui a Portugal con mis abuelos. Fuimos en barco. Tomé el sol y descansé. Lo pasé bien."<br><br>
+      🎙 <strong>Felipe:</strong> "El verano pasado fui a Argentina solo. Fui en avión. Fui de excursión y monté en bicicleta. ¡Lo pasé bomba!"<br><br>
+      🎙 <strong>Amaya:</strong> "Fui a Toledo el año pasado con mi clase. Fuimos en autocar. Visité monumentos y saqué fotos. Fue estupendo."<br><br>
+      🎙 <strong>Javi:</strong> "El verano pasado fui a Irlanda con mi hermana. Fuimos en barco y en tren. Escuché música y bailé. Lo pasé guay."
+    </div>
+    <table class="ltable"><thead><tr><th>Speaker</th><th>Where?</th><th>How?</th><th>Who with?</th><th>One activity</th><th>Opinion</th></tr></thead><tbody id="ltBody"></tbody></table>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="check-btn" onclick="checkLT()">Check</button><button class="reset-btn" onclick="buildLT()">Reset</button></div>
+    <p id="ltFb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎧 Activity W — Gap fill from listening (Level 5)</div>
+    <div class="card-instr">Read the transcript. Fill each gap with the correct word.</div>
+    <div class="rtext" style="font-style:italic;font-size:0.85rem">
+      🎙 <strong>[Almudena talking about her holidays]</strong><br><br>
+      "Generalmente voy a Cuba de vacaciones. Voy en autocar y en barco con mis padres. Me encanta nadar en el mar y por las tardes juego al voleibol en la playa. El verano pasado fui a Valencia en tren y en autocar. Descansé, fui de compras y monté en bicicleta. Lo pasé muy bien."
+    </div>
+    <div class="rtext" id="gf3"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="check-btn" onclick="checkGF('gf3','gf3Fb',gf3d)">Check</button><button class="reset-btn" onclick="buildGF('gf3',gf3d)">Reset</button></div>
+    <p id="gf3Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎧 Activity X — Listening-style MCQ (transcript 2, new speaker)</div>
+    <div class="card-instr">A second transcript. Same style, fresh content for more practice.</div>
+    <div class="rtext" style="font-style:italic">
+      🎙 <strong>[Beatriz talking about her holidays]</strong><br><br>
+      "El año pasado fui a México con mi hermano. Fuimos en avión — ¡me encanta el avión! Pasamos diez días en la playa. Nadé todos los días y tomé muchísimo el sol. Una noche fuimos a un restaurante mexicano y bailé salsa — ¡fue lo mejor de las vacaciones! No visitamos monumentos porque a mi hermano no le gustan nada. Compramos regalos para la familia el último día. En general, fue un viaje estupendo."
+    </div>
+    <div id="lmcq2"></div>
+    <button class="check-btn" onclick="checkLMCQ2()">Check all</button>
+    <p id="lmcq2Fb" style="margin-top:0.5rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎧 Activity Y — True or False from listening (transcript 2)</div>
+    <div class="card-instr">Based on Beatriz's transcript above, decide if each statement is true or false.</div>
+    <div id="tf3"></div>
+    <div style="display:flex;gap:0.5rem;margin-top:0.6rem"><button class="check-btn" onclick="checkTF('tf3','tf3Fb',tf3d)">Check</button><button class="reset-btn" onclick="buildTF('tf3',tf3d)">Reset</button></div>
+    <p id="tf3Fb" style="margin-top:0.4rem;font-size:0.83rem;font-weight:700;color:#185FA5"></p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 7: RESULTS -->
+<!-- ============================================================ -->
+<div id="sec6" class="section">
+  <div class="section-header">
+    <div class="section-badge">🏆</div>
+    <div class="section-meta"><h2>Results & self-assessment</h2><p>See how you did and what to review before the test.</p></div>
+  </div>
+
+  <div class="big-score"><div class="bs-num" id="finalScore">—</div><div class="bs-label">points earned across all activities</div></div>
+  <div class="summary-grid" id="summaryGrid"></div>
+
+  <div class="card">
+    <div class="card-title">📝 What to focus on before the test</div>
+    <div id="focusAdvice" style="font-size:0.88rem;line-height:1.7"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🌟 Final model sentences — read these before your test</div>
+    <div class="rtext" style="line-height:2">
+      El <strong>verano pasado</strong> <span style="color:#185FA5;font-weight:700">fui</span> a <strong>Grecia</strong> con mis <strong>padres</strong>.<br>
+      <span style="color:#185FA5;font-weight:700">Fuimos</span> en <strong>avión</strong>. <span style="color:#185FA5;font-weight:700">Pasé</span> dos semanas allí.<br>
+      <span style="color:#185FA5;font-weight:700">Tomé</span> el sol, <span style="color:#185FA5;font-weight:700">visité</span> monumentos y <span style="color:#185FA5;font-weight:700">fui</span> de excursión.<br>
+      Me <span style="color:#E24B4A;font-weight:700">encanta</span> viajar. ¡Lo <span style="color:#185FA5;font-weight:700">pasé</span> fenomenal!
+    </div>
+    <div class="success">✅ <strong>Blue = past tense verbs</strong> · <strong>Red = present tense opinion</strong>. Make sure you recognise AND can produce these in the test!</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔁 Finished everything? Go back and repeat!</div>
+    <div class="card-instr">If you've completed every activity, the BEST use of remaining time is to go back to Section 1 or 2 and redo the matching and verb activities — they reshuffle, so it's good extra practice. You can also try covering up the English vocabulary and testing yourself out loud with a partner.</div>
+  </div>
+</div>
+<div class="bottom-bar">
+  <div class="score-display"><span class="sl">Points</span><span class="sv" id="scoreDisplay">0</span></div>
+  <div class="nav-btns">
+    <button class="nav-btn" id="prevBtn" onclick="navigate(-1)" style="display:none">← Previous</button>
+    <button class="nav-btn next" id="nextBtn" onclick="navigate(1)">Next section →</button>
+  </div>
+</div>
+
+<script>
+// ====== STATE ======
+let totalPts = 0;
+let currentSection = 0;
+const totalSections = 7;
+let sectionScores = [0,0,0,0,0,0,0];
+const sectionNames = ['Vocabulary','Verbs','Matching','Reading A','Reading B','Listening'];
+let timerSecs = 40*60;
+let timerInterval;
+
+function startTimer(){
+  timerInterval = setInterval(()=>{
+    timerSecs--;
+    if(timerSecs<0){ clearInterval(timerInterval); document.getElementById('timerVal').textContent='0:00'; return; }
+    const m=Math.floor(timerSecs/60), s=timerSecs%60;
+    document.getElementById('timerVal').textContent=m+':'+(s<10?'0':'')+s;
+    if(timerSecs<=300) document.getElementById('timerBox').classList.add('warning');
+  },1000);
+}
+startTimer();
+
+function goSection(n, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.step-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec'+n).classList.add('active');
+  if(btn) btn.classList.add('active'); else document.querySelectorAll('.step-btn')[n].classList.add('active');
+  currentSection = n;
+  document.getElementById('progressFill').style.width = (n/6*100)+'%';
+  document.getElementById('progressLabel').textContent = 'Section '+(n+1)+' of 7';
+  document.getElementById('prevBtn').style.display = n>0?'':'none';
+  document.getElementById('nextBtn').textContent = n===5 ? 'See Results →' : n===6 ? '🔄 Restart' : 'Next section →';
+  if(n===6) buildSummary();
+  window.scrollTo(0,0);
+}
+function navigate(dir){
+  let next = currentSection + dir;
+  if(next<0) next=0;
+  if(next>=totalSections) next=0;
+  document.querySelectorAll('.step-btn')[currentSection].classList.add('done');
+  goSection(next, null);
+}
+function addPts(n){ totalPts+=n; document.getElementById('scoreDisplay').textContent=totalPts; }
+
+// ====== VOCAB SETS ======
+const vocabSets = {
+  countries: [['Francia','France'],['Alemania','Germany'],['Escocia','Scotland'],['Irlanda','Ireland'],['Portugal','Portugal'],['Italia','Italy'],['Grecia','Greece'],['Cuba','Cuba'],['México','Mexico'],['Argentina','Argentina'],['Japón','Japan'],['Gales','Wales'],['España','Spain'],['Estados Unidos','USA']],
+  transport: [['en avión','by plane'],['en tren','by train'],['en coche','by car'],['en barco','by boat/ship'],['en autocar','by coach'],['en bicicleta','by bike'],['a pie','on foot']],
+  activities: [['tomé el sol','I sunbathed'],['fui de compras','I went shopping'],['visité monumentos','I visited monuments'],['bailé','I danced'],['descansé','I rested'],['saqué fotos','I took photos'],['mandé mensajes','I sent messages'],['escuché música','I listened to music'],['fui de excursión','I went on an excursion'],['monté en bicicleta','I went cycling'],['jugué al voleibol','I played volleyball'],['pinté','I painted'],['nadé','I swam'],['fui a la discoteca','I went to the nightclub'],['fui a restaurantes','I went to restaurants'],['comí mucho','I ate a lot']],
+  opinions: [['fue genial','it was great'],['fue guay','it was cool'],['fue bomba','it was brilliant'],['fue estupendo','it was wonderful'],['fue fenomenal','it was fantastic'],['lo pasé bien','I had a good time'],['lo pasé mal','I had a bad time'],['lo pasé fenomenal','I had a fantastic time'],['fue horrible','it was horrible'],['fue aburrido','it was boring'],['fue un desastre','it was a disaster'],['me encanta(n)','I love'],['me gusta mucho','I really like'],['no me gusta nada','I don\'t like it at all'],['odio','I hate']],
+  time: [['el verano pasado','last summer'],['el invierno pasado','last winter'],['el año pasado','last year'],['una semana','one week'],['dos semanas','two weeks'],['diez días','ten days'],['con mi familia','with my family'],['con mis amigos','with my friends'],['con mis padres','with my parents'],['solo/a','alone'],['normalmente','normally'],['generalmente','generally']]
+};
+function buildVocab(group, id){
+  const half=Math.ceil(group.length/2);
+  const cols=[group.slice(0,half),group.slice(half)];
+  document.getElementById(id).innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem">'+cols.map(col=>'<div class="vocab-group">'+col.map(([es,en])=>`<div class="v-item"><span class="v-es">${es}</span><span class="v-en h" onclick="revOne(this)">${en}</span></div>`).join('')+'</div>').join('')+'</div>';
+}
+buildVocab(vocabSets.countries,'vg-countries');
+buildVocab(vocabSets.transport,'vg-transport');
+buildVocab(vocabSets.activities,'vg-activities');
+buildVocab(vocabSets.opinions,'vg-opinions');
+buildVocab(vocabSets.time,'vg-time');
+function revOne(el){ el.classList.remove('h'); el.classList.add('r'); el.onclick=null; }
+function revGroup(g){ document.querySelectorAll('#vg-'+g+' .v-en.h').forEach(revOne); }
+function hideGroup(g){ document.querySelectorAll('#vg-'+g+' .v-en.r').forEach(el=>{ el.classList.remove('r'); el.classList.add('h'); el.onclick=()=>revOne(el); }); }
+// ====== CLASSIFY ROUND 1 ======
+const clWords=[
+  {w:'Francia',cat:'dest'},{w:'Italia',cat:'dest'},{w:'Cuba',cat:'dest'},{w:'Grecia',cat:'dest'},{w:'México',cat:'dest'},
+  {w:'en avión',cat:'trans'},{w:'en tren',cat:'trans'},{w:'en barco',cat:'trans'},{w:'en coche',cat:'trans'},
+  {w:'fue genial',cat:'opin'},{w:'lo pasé bien',cat:'opin'},{w:'fue horrible',cat:'opin'},{w:'fue aburrido',cat:'opin'},{w:'fue fenomenal',cat:'opin'},
+];
+let clSel=null;
+function buildClassify(){
+  clSel=null;
+  document.getElementById('clBank').innerHTML=clWords.map((item,i)=>`<span class="bchip" data-i="${i}" onclick="selCl(this)">${item.w}</span>`).sort(()=>Math.random()-0.5).join('');
+  // shuffle by re-render
+  const arr=[...clWords.keys()].sort(()=>Math.random()-0.5);
+  document.getElementById('clBank').innerHTML=arr.map(i=>`<span class="bchip" data-i="${i}" onclick="selCl(this)">${clWords[i].w}</span>`).join('');
+  ['cz-dest','cz-trans','cz-opin'].forEach(z=>document.getElementById(z).innerHTML='');
+  document.getElementById('clFb').textContent='';
+}
+function selCl(ch){ document.querySelectorAll('#clBank .bchip.sel').forEach(c=>c.classList.remove('sel')); if(ch.classList.contains('placed'))return; ch.classList.add('sel'); clSel=ch; }
+function dropTo(zoneId,cat){
+  if(!clSel) return;
+  const dc=document.createElement('span'); dc.className='dchip'; dc.textContent=clWords[clSel.dataset.i].w; dc.dataset.i=clSel.dataset.i; dc.dataset.cat=cat;
+  dc.onclick=()=>{ dc.remove(); document.querySelector(`#clBank .bchip[data-i="${dc.dataset.i}"]`).classList.remove('placed','sel'); };
+  document.getElementById(zoneId).appendChild(dc);
+  clSel.classList.add('placed'); clSel.classList.remove('sel'); clSel=null;
+}
+document.getElementById('cz-dest').onclick=()=>dropTo('cz-dest','dest');
+document.getElementById('cz-trans').onclick=()=>dropTo('cz-trans','trans');
+document.getElementById('cz-opin').onclick=()=>dropTo('cz-opin','opin');
+function checkClassify(){
+  let c=0,t=0;
+  document.querySelectorAll('#cz-dest .dchip, #cz-trans .dchip, #cz-opin .dchip').forEach(ch=>{ t++; if(clWords[ch.dataset.i].cat===ch.dataset.cat){c++;ch.style.background='#EAF3DE';ch.style.borderColor='#639922';}else{ch.style.background='#FCEBEB';ch.style.borderColor='#E24B4A';} });
+  const fb=document.getElementById('clFb');
+  if(t===0){fb.textContent='Place some words first!';return;}
+  fb.textContent=`${c} / ${t} correct`; fb.style.color=c===t?'#3B6D11':'#A32D2D'; addPts(c); sectionScores[0]+=c;
+}
+function resetClassify(){ buildClassify(); }
+buildClassify();
+
+// ====== CLASSIFY ROUND 2 ======
+const clWords2=[
+  {w:'Portugal',cat:'dest'},{w:'Escocia',cat:'dest'},{w:'Japón',cat:'dest'},{w:'Argentina',cat:'dest'},{w:'Irlanda',cat:'dest'},
+  {w:'en autocar',cat:'trans'},{w:'en bicicleta',cat:'trans'},{w:'a pie',cat:'trans'},{w:'en tren',cat:'trans'},
+  {w:'fue estupendo',cat:'opin'},{w:'fue un desastre',cat:'opin'},{w:'lo pasé mal',cat:'opin'},{w:'fue guay',cat:'opin'},{w:'fue bomba',cat:'opin'},
+];
+let clSel2=null;
+function buildClassify2(){
+  clSel2=null;
+  const arr=[...clWords2.keys()].sort(()=>Math.random()-0.5);
+  document.getElementById('clBank2').innerHTML=arr.map(i=>`<span class="bchip" data-i="${i}" onclick="selCl2(this)">${clWords2[i].w}</span>`).join('');
+  ['cz2-dest','cz2-trans','cz2-opin'].forEach(z=>document.getElementById(z).innerHTML='');
+  document.getElementById('clFb2').textContent='';
+}
+function selCl2(ch){ document.querySelectorAll('#clBank2 .bchip.sel').forEach(c=>c.classList.remove('sel')); if(ch.classList.contains('placed'))return; ch.classList.add('sel'); clSel2=ch; }
+function dropTo2(zoneId,cat){
+  if(!clSel2) return;
+  const dc=document.createElement('span'); dc.className='dchip'; dc.textContent=clWords2[clSel2.dataset.i].w; dc.dataset.i=clSel2.dataset.i; dc.dataset.cat=cat;
+  dc.onclick=()=>{ dc.remove(); document.querySelector(`#clBank2 .bchip[data-i="${dc.dataset.i}"]`).classList.remove('placed','sel'); };
+  document.getElementById(zoneId).appendChild(dc);
+  clSel2.classList.add('placed'); clSel2.classList.remove('sel'); clSel2=null;
+}
+document.getElementById('cz2-dest').onclick=()=>dropTo2('cz2-dest','dest');
+document.getElementById('cz2-trans').onclick=()=>dropTo2('cz2-trans','trans');
+document.getElementById('cz2-opin').onclick=()=>dropTo2('cz2-opin','opin');
+function checkClassify2(){
+  let c=0,t=0;
+  document.querySelectorAll('#cz2-dest .dchip, #cz2-trans .dchip, #cz2-opin .dchip').forEach(ch=>{ t++; if(clWords2[ch.dataset.i].cat===ch.dataset.cat){c++;ch.style.background='#EAF3DE';ch.style.borderColor='#639922';}else{ch.style.background='#FCEBEB';ch.style.borderColor='#E24B4A';} });
+  const fb=document.getElementById('clFb2');
+  if(t===0){fb.textContent='Place some words first!';return;}
+  fb.textContent=`${c} / ${t} correct`; fb.style.color=c===t?'#3B6D11':'#A32D2D'; addPts(c); sectionScores[0]+=c;
+}
+function resetClassify2(){ buildClassify2(); }
+buildClassify2();
+
+// ====== OAT ROUND 1 ======
+const oatD=[
+  {s:'Fui a Portugal el año pasado.',cat:'T',l:'Time'},{s:'Tomé el sol y descansé.',cat:'A',l:'Activity'},
+  {s:'Lo pasé mal.',cat:'O',l:'Opinion'},{s:'Pinté y saqué fotos.',cat:'A',l:'Activity'},
+  {s:'Fue estupendo.',cat:'O',l:'Opinion'},{s:'Fuimos en avión a Cuba.',cat:'A',l:'Activity'},
+  {s:'El verano pasado fui a Italia.',cat:'T',l:'Time'},{s:'Me encanta bailar.',cat:'O',l:'Opinion'},
+  {s:'Pasé dos semanas en Escocia.',cat:'T',l:'Time'},{s:'Monté en bicicleta todos los días.',cat:'A',l:'Activity'},
+];
+let oatAns={};
+function buildOAT(){
+  oatAns={};
+  document.getElementById('oatContainer').innerHTML=oatD.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. <em>${q.s}</em></p><div class="opts"><button class="opt" data-o="${i}" onclick="selOAT(this,${i},'O','${q.cat}')">⭐ Opinion</button><button class="opt" data-o="${i}" onclick="selOAT(this,${i},'A','${q.cat}')">🏄 Activity</button><button class="opt" data-o="${i}" onclick="selOAT(this,${i},'T','${q.cat}')">⏰ Time</button></div><div class="qfb" id="oatfb${i}"></div></div>`).join('');
+}
+function selOAT(btn,i,v,correct){ document.querySelectorAll(`[data-o="${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(v===correct?'correct':'wrong'); oatAns[i]=v; }
+function checkOAT(){ let ok=0; oatD.forEach((q,i)=>{ const fb=document.getElementById('oatfb'+i); if(oatAns[i]===q.cat){ok++;fb.textContent='✅ '+q.l;fb.className='qfb ok';}else if(oatAns[i]){fb.textContent='❌ '+q.l;fb.className='qfb no';} }); document.getElementById('oatFb').textContent=`${ok} / ${oatD.length} correct`; addPts(ok); sectionScores[0]+=ok; }
+buildOAT();
+
+// ====== OAT ROUND 2 ======
+const oat2D=[
+  {s:'Fui de compras con mi madre.',cat:'A',l:'Activity'},{s:'Fue un desastre.',cat:'O',l:'Opinion'},
+  {s:'El mes pasado fui a Japón.',cat:'T',l:'Time'},{s:'Escuché música toda la noche.',cat:'A',l:'Activity'},
+  {s:'No me gusta nada el avión.',cat:'O',l:'Opinion'},{s:'Pasé diez días en Argentina.',cat:'T',l:'Time'},
+  {s:'Jugué al voleibol en la playa.',cat:'A',l:'Activity'},{s:'¡Lo pasé fenomenal!',cat:'O',l:'Opinion'},
+];
+let oat2Ans={};
+function buildOAT2(){
+  oat2Ans={};
+  document.getElementById('oat2Container').innerHTML=oat2D.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. <em>${q.s}</em></p><div class="opts"><button class="opt" data-o2="${i}" onclick="selOAT2(this,${i},'O','${q.cat}')">⭐ Opinion</button><button class="opt" data-o2="${i}" onclick="selOAT2(this,${i},'A','${q.cat}')">🏄 Activity</button><button class="opt" data-o2="${i}" onclick="selOAT2(this,${i},'T','${q.cat}')">⏰ Time</button></div><div class="qfb" id="oat2fb${i}"></div></div>`).join('');
+}
+function selOAT2(btn,i,v,correct){ document.querySelectorAll(`[data-o2="${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(v===correct?'correct':'wrong'); oat2Ans[i]=v; }
+function checkOAT2(){ let ok=0; oat2D.forEach((q,i)=>{ const fb=document.getElementById('oat2fb'+i); if(oat2Ans[i]===q.cat){ok++;fb.textContent='✅ '+q.l;fb.className='qfb ok';}else if(oat2Ans[i]){fb.textContent='❌ '+q.l;fb.className='qfb no';} }); document.getElementById('oat2Fb').textContent=`${ok} / ${oat2D.length} correct`; addPts(ok); sectionScores[0]+=ok; }
+buildOAT2();
+
+// ====== PICTURE MATCH ROUND 1 ======
+const picItems=[
+  {e:'☀️',l:'sunbathed',s:'Tomé el sol.'},{e:'🛍️',l:'went shopping',s:'Fui de compras.'},
+  {e:'🏛️',l:'visited monuments',s:'Visité monumentos.'},{e:'🕺',l:'danced',s:'Bailé en la discoteca.'},
+  {e:'📸',l:'took photos',s:'Saqué fotos.'},{e:'🚲',l:'went cycling',s:'Monté en bicicleta.'},
+  {e:'🎵',l:'listened to music',s:'Escuché música.'},{e:'🗺️',l:'went on excursion',s:'Fui de excursión.'},
+];
+let picSel=null;
+function buildPic(){
+  picSel=null;
+  const sh1=[...picItems].sort(()=>Math.random()-0.5), sh2=[...picItems].sort(()=>Math.random()-0.5);
+  document.getElementById('sentBank').innerHTML=sh1.map(item=>`<span style="padding:0.25rem 0.7rem;background:white;border:0.5px solid #BA7517;border-radius:20px;cursor:pointer;font-size:0.82rem" data-ps="${item.s}" onclick="selPic(this)">${item.s}</span>`).join('');
+  document.getElementById('picGrid').innerHTML=sh2.map(item=>`<div style="background:#F1EFE8;border-radius:8px;padding:0.6rem;text-align:center;cursor:pointer;border:2px solid transparent" data-pp="${item.s}" onclick="placePic(this)"><div style="font-size:1.8rem">${item.e}</div><div style="font-size:0.72rem;color:#5F5E5A;margin-top:2px">${item.l}</div></div>`).join('');
+  document.getElementById('picFb').textContent='';
+}
+function selPic(el){ document.querySelectorAll('#sentBank span').forEach(s=>{ if(s.style.opacity!=='0.4') s.style.background='white'; }); el.style.background='#FAEEDA'; picSel=el; }
+function placePic(card){
+  if(!picSel||card.style.borderColor==='rgb(99, 153, 34)')return;
+  if(picSel.dataset.ps===card.dataset.pp){ card.style.borderColor='#639922'; card.style.background='#EAF3DE'; picSel.style.opacity='0.4'; picSel.style.pointerEvents='none'; picSel=null; addPts(1); sectionScores[0]+=1; }
+  else{ card.style.borderColor='#E24B4A'; setTimeout(()=>card.style.borderColor='transparent',700); }
+}
+buildPic();
+
+// ====== PICTURE MATCH ROUND 2 (Section 3) ======
+const picItems2=[
+  {e:'🏊',l:'swam',s:'Nadé en el mar.'},{e:'🎨',l:'painted',s:'Pinté un cuadro.'},
+  {e:'🏐',l:'played volleyball',s:'Jugué al voleibol.'},{e:'💬',l:'sent messages',s:'Mandé mensajes.'},
+  {e:'🍽️',l:'went to restaurants',s:'Fui a restaurantes.'},{e:'😴',l:'rested',s:'Descansé en el hotel.'},
+  {e:'🚂',l:'travelled by train',s:'Viajé en tren.'},{e:'🏰',l:'visited a castle',s:'Visité un castillo.'},
+];
+let picSel2=null;
+function buildPic2(){
+  picSel2=null;
+  const sh1=[...picItems2].sort(()=>Math.random()-0.5), sh2=[...picItems2].sort(()=>Math.random()-0.5);
+  document.getElementById('sentBank2').innerHTML=sh1.map(item=>`<span style="padding:0.25rem 0.7rem;background:white;border:0.5px solid #BA7517;border-radius:20px;cursor:pointer;font-size:0.82rem" data-ps2="${item.s}" onclick="selPic2(this)">${item.s}</span>`).join('');
+  document.getElementById('picGrid2').innerHTML=sh2.map(item=>`<div style="background:#F1EFE8;border-radius:8px;padding:0.6rem;text-align:center;cursor:pointer;border:2px solid transparent" data-pp2="${item.s}" onclick="placePic2(this)"><div style="font-size:1.8rem">${item.e}</div><div style="font-size:0.72rem;color:#5F5E5A;margin-top:2px">${item.l}</div></div>`).join('');
+  document.getElementById('picFb2').textContent='';
+}
+function selPic2(el){ document.querySelectorAll('#sentBank2 span').forEach(s=>{ if(s.style.opacity!=='0.4') s.style.background='white'; }); el.style.background='#FAEEDA'; picSel2=el; }
+function placePic2(card){
+  if(!picSel2||card.style.borderColor==='rgb(99, 153, 34)')return;
+  if(picSel2.dataset.ps2===card.dataset.pp2){ card.style.borderColor='#639922'; card.style.background='#EAF3DE'; picSel2.style.opacity='0.4'; picSel2.style.pointerEvents='none'; picSel2=null; addPts(1); sectionScores[2]+=1; }
+  else{ card.style.borderColor='#E24B4A'; setTimeout(()=>card.style.borderColor='transparent',700); }
+}
+buildPic2();
+
+// ====== QUICK-FIRE QUIZ ======
+const qfD=[
+  {q:'"fui de excursión" means...',opts:['I went shopping','I went on an excursion','I went swimming'],ans:'I went on an excursion'},
+  {q:'"lo pasé fenomenal" means...',opts:['it was boring','I had a fantastic time','it was a disaster'],ans:'I had a fantastic time'},
+  {q:'"en barco" means...',opts:['by car','by boat','by bike'],ans:'by boat'},
+  {q:'"el año pasado" means...',opts:['last year','next year','this year'],ans:'last year'},
+  {q:'"odio" means...',opts:['I love','I like','I hate'],ans:'I hate'},
+  {q:'"monté en bicicleta" means...',opts:['I went cycling','I painted','I rested'],ans:'I went cycling'},
+  {q:'"con mis padres" means...',opts:['with my friends','with my parents','alone'],ans:'with my parents'},
+  {q:'"fue un desastre" means...',opts:['it was great','it was a disaster','it was boring'],ans:'it was a disaster'},
+  {q:'"saqué fotos" means...',opts:['I took photos','I sent messages','I listened to music'],ans:'I took photos'},
+  {q:'"normalmente" means...',opts:['never','sometimes','normally'],ans:'normally'},
+  {q:'"no me gusta nada" means...',opts:['I really like it','I don\'t like it at all','I love it'],ans:'I don\'t like it at all'},
+  {q:'"quince días" means...',opts:['fifteen days','five days','fifty days'],ans:'fifteen days'},
+];
+let qfAns={};
+function buildQF(){
+  qfAns={};
+  document.getElementById('qfContainer').innerHTML=qfD.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. ${q.q}</p><div class="opts">${q.opts.map(o=>`<button class="opt" data-qf="${i}" onclick="selQF(this,${i},'${o}','${q.ans}')">${o}</button>`).join('')}</div><div class="qfb" id="qffb${i}"></div></div>`).join('');
+}
+function selQF(btn,i,v,correct){ document.querySelectorAll(`[data-qf="${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(v===correct?'correct':'wrong'); qfAns[i]=v; }
+function checkQF(){ let ok=0; qfD.forEach((q,i)=>{ const fb=document.getElementById('qffb'+i); if(qfAns[i]===q.ans){ok++;fb.textContent='✅';fb.className='qfb ok';}else if(qfAns[i]){fb.textContent=`❌ ${q.ans}`;fb.className='qfb no';} }); document.getElementById('qfFb').textContent=`${ok} / ${qfD.length} correct`; addPts(ok); sectionScores[0]+=ok; }
+buildQF();
+// ====== VERB FILL ROUND 1 ======
+const vfD=[
+  {inf:'tomar',pr:'yo',ans:'tomé'},{inf:'visitar',pr:'él',ans:'visitó'},{inf:'bailar',pr:'nosotros',ans:'bailamos'},
+  {inf:'descansar',pr:'yo',ans:'descansé'},{inf:'escuchar',pr:'ella',ans:'escuchó'},{inf:'mandar',pr:'ellos',ans:'mandaron'},
+  {inf:'sacar',pr:'yo',ans:'saqué'},{inf:'jugar',pr:'yo',ans:'jugué'},{inf:'ir',pr:'yo',ans:'fui'},{inf:'ir',pr:'nosotros',ans:'fuimos'},
+];
+function buildVF(){
+  document.getElementById('vfTable').innerHTML=`<table class="vtable"><tr><th>#</th><th>Infinitive</th><th>Person</th><th>Your answer</th><th></th></tr>${vfD.map((v,i)=>`<tr><td style="color:#888780">${i+1}</td><td><strong>${v.inf}</strong></td><td>${v.pr}</td><td><input class="vfinput" id="vf${i}" placeholder="..."></td><td id="vfr${i}"></td></tr>`).join('')}</table>`;
+  document.getElementById('vfFb').textContent='';
+}
+function checkVF(){
+  let ok=0; vfD.forEach((v,i)=>{ const inp=document.getElementById('vf'+i),res=document.getElementById('vfr'+i),val=inp.value.trim().toLowerCase();
+    if(val===v.ans){ok++;inp.className='vfinput ci';res.textContent='✅';}else{inp.className='vfinput wi';res.innerHTML=`❌ <span style="color:#3B6D11">${v.ans}</span>`;}
+  }); document.getElementById('vfFb').textContent=`${ok} / ${vfD.length} correct`; addPts(ok); sectionScores[1]+=ok;
+}
+buildVF();
+
+// ====== VERB FILL ROUND 2 ======
+const vf2D=[
+  {inf:'pasar',pr:'yo',ans:'pasé'},{inf:'nadar',pr:'ella',ans:'nadó'},{inf:'pintar',pr:'nosotros',ans:'pintamos'},
+  {inf:'montar',pr:'tú',ans:'montaste'},{inf:'visitar',pr:'ellos',ans:'visitaron'},{inf:'bailar',pr:'yo',ans:'bailé'},
+  {inf:'escuchar',pr:'yo',ans:'escuché'},{inf:'sacar',pr:'él',ans:'sacó'},{inf:'jugar',pr:'nosotros',ans:'jugamos'},{inf:'ser',pr:'ellos',ans:'fueron'},
+];
+function buildVF2(){
+  document.getElementById('vf2Table').innerHTML=`<table class="vtable"><tr><th>#</th><th>Infinitive</th><th>Person</th><th>Your answer</th><th></th></tr>${vf2D.map((v,i)=>`<tr><td style="color:#888780">${i+1}</td><td><strong>${v.inf}</strong></td><td>${v.pr}</td><td><input class="vfinput" id="vf2${i}" placeholder="..."></td><td id="vf2r${i}"></td></tr>`).join('')}</table>`;
+  document.getElementById('vf2Fb').textContent='';
+}
+function checkVF2(){
+  let ok=0; vf2D.forEach((v,i)=>{ const inp=document.getElementById('vf2'+i),res=document.getElementById('vf2r'+i),val=inp.value.trim().toLowerCase();
+    if(val===v.ans){ok++;inp.className='vfinput ci';res.textContent='✅';}else{inp.className='vfinput wi';res.innerHTML=`❌ <span style="color:#3B6D11">${v.ans}</span>`;}
+  }); document.getElementById('vf2Fb').textContent=`${ok} / ${vf2D.length} correct`; addPts(ok); sectionScores[1]+=ok;
+}
+buildVF2();
+
+// ====== VERB CHOICE ROUND 1 ======
+const vcD=[
+  {t:'El año pasado ___ a Grecia con mis padres.',ans:'fui',opts:['fui','fue','fuimos','fuiste']},
+  {t:'Mis amigos ___ en avión a México.',ans:'fueron',opts:['fueron','fuimos','fue','fui']},
+  {t:'___ el sol todos los días en la playa.',ans:'Tomé',opts:['Tomé','Tomó','Tomamos','Tomar']},
+  {t:'¡La excursión ___ estupenda!',ans:'fue',opts:['fue','fui','fuimos','era']},
+  {t:'El verano pasado ___ en bicicleta por el parque.',ans:'monté',opts:['monté','montó','montamos','montar']},
+  {t:'___ fotos de los monumentos más famosos.',ans:'Saqué',opts:['Sacé','Saqué','Sacar','Saque']},
+  {t:'___ a la discoteca y bailé hasta las dos.',ans:'Fui',opts:['Fui','Fue','Fuimos','Voy']},
+  {t:'Mis padres y yo ___ de compras en el centro.',ans:'fuimos',opts:['fuimos','fui','fueron','fuis']},
+];
+let vcAns={};
+function buildVC(){
+  vcAns={};
+  document.getElementById('vcContainer').innerHTML=vcD.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. ${q.t.replace('___','<strong style="color:#185FA5">___</strong>')}</p><div class="opts">${q.opts.map(o=>`<button class="opt" data-vc="${i}" onclick="selVC(this,${i},'${o}','${q.ans}')">${o}</button>`).join('')}</div><div class="qfb" id="vcfb${i}"></div></div>`).join('');
+  document.getElementById('vcFb').textContent='';
+}
+function selVC(btn,i,v,correct){ document.querySelectorAll(`[data-vc="${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(v===correct?'correct':'wrong'); vcAns[i]=v; }
+function checkVC(){ let ok=0; vcD.forEach((q,i)=>{ const fb=document.getElementById('vcfb'+i); if(vcAns[i]===q.ans){ok++;fb.textContent='✅';fb.className='qfb ok';}else if(vcAns[i]){fb.textContent=`❌ ${q.ans}`;fb.className='qfb no';} }); document.getElementById('vcFb').textContent=`${ok} / ${vcD.length} correct`; addPts(ok); sectionScores[1]+=ok; }
+buildVC();
+
+// ====== VERB CHOICE ROUND 2 ======
+const vc2D=[
+  {t:'El invierno pasado ___ a Alemania con mi clase.',ans:'fui',opts:['fui','fue','fuimos','fuisteis']},
+  {t:'Mi hermana ___ mucho en la discoteca.',ans:'bailó',opts:['bailé','bailó','bailamos','bailar']},
+  {t:'Nosotros ___ dos semanas en Portugal.',ans:'pasamos',opts:['pasé','pasó','pasamos','pasaron']},
+  {t:'¿___ tú fotos del castillo?',ans:'Sacaste',opts:['Saqué','Sacaste','Sacó','Sacamos']},
+  {t:'Mis padres ___ en barco a Cuba.',ans:'fueron',opts:['fui','fue','fuimos','fueron']},
+  {t:'Yo ___ mensajes a todos mis amigos.',ans:'mandé',opts:['mandé','mandó','mandamos','mandaron']},
+  {t:'¡La comida italiana ___ estupenda!',ans:'fue',opts:['fui','fue','fuimos','fueron']},
+  {t:'Nosotros ___ al voleibol en la playa.',ans:'jugamos',opts:['jugué','jugó','jugamos','jugaron']},
+];
+let vc2Ans={};
+function buildVC2(){
+  vc2Ans={};
+  document.getElementById('vc2Container').innerHTML=vc2D.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. ${q.t.replace('___','<strong style="color:#185FA5">___</strong>')}</p><div class="opts">${q.opts.map(o=>`<button class="opt" data-vc2="${i}" onclick="selVC2(this,${i},'${o}','${q.ans}')">${o}</button>`).join('')}</div><div class="qfb" id="vc2fb${i}"></div></div>`).join('');
+  document.getElementById('vc2Fb').textContent='';
+}
+function selVC2(btn,i,v,correct){ document.querySelectorAll(`[data-vc2="${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(v===correct?'correct':'wrong'); vc2Ans[i]=v; }
+function checkVC2(){ let ok=0; vc2D.forEach((q,i)=>{ const fb=document.getElementById('vc2fb'+i); if(vc2Ans[i]===q.ans){ok++;fb.textContent='✅';fb.className='qfb ok';}else if(vc2Ans[i]){fb.textContent=`❌ ${q.ans}`;fb.className='qfb no';} }); document.getElementById('vc2Fb').textContent=`${ok} / ${vc2D.length} correct`; addPts(ok); sectionScores[1]+=ok; }
+buildVC2();
+
+// ====== TRANSLATE VERB ======
+const trVerbD=[
+  {en:'I went (ir)',ans:'fui'},{en:'I sunbathed',ans:'tomé el sol'},{en:'we went (ir)',ans:'fuimos'},
+  {en:'I took (photos)',ans:'saqué'},{en:'they danced',ans:'bailaron'},{en:'I played',ans:'jugué'},
+  {en:'it was (ser)',ans:'fue'},{en:'we rested',ans:'descansamos'},
+];
+function buildTrVerb(){
+  document.getElementById('trVerbContainer').innerHTML=trVerbD.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. <strong>${q.en}</strong></p><input class="dictinput" id="trv${i}" placeholder="Type in Spanish..."><div class="qfb" id="trvfb${i}" style="margin-top:0.3rem"></div></div>`).join('');
+  document.getElementById('trVerbFb').textContent='';
+}
+function checkTrVerb(){
+  let ok=0;
+  trVerbD.forEach((q,i)=>{ const inp=document.getElementById('trv'+i),fb=document.getElementById('trvfb'+i),val=inp.value.trim().toLowerCase();
+    if(val===q.ans){ok++;inp.className='dictinput ci';fb.textContent='✅ Correct!';fb.className='qfb ok';}
+    else if(val.length>0){inp.className='dictinput wi';fb.innerHTML=`❌ Answer: <span style="color:#3B6D11">${q.ans}</span>`;fb.className='qfb no';}
+  });
+  document.getElementById('trVerbFb').textContent=`${ok} / ${trVerbD.length} correct`; addPts(ok); sectionScores[1]+=ok;
+}
+buildTrVerb();
+// ====== MATCH DATA ======
+const mp1=[['Tomé el sol','I sunbathed'],['Visité monumentos','I visited monuments'],['Saqué fotos','I took photos'],['Mandé mensajes','I sent messages'],['Monté en bicicleta','I went cycling'],['Fui de compras','I went shopping'],['Escuché música','I listened to music'],['Fui de excursión','I went on an excursion']];
+const mp2=[['Lo pasé fenomenal','I had a fantastic time'],['Fue un desastre','It was a disaster'],['Me encanta viajar','I love travelling'],['No me gusta nada el tren','I don\'t like the train at all'],['Fue estupendo','It was wonderful'],['Lo pasé mal','I had a bad time'],['Fue aburrido','It was boring'],['Odio los monumentos','I hate monuments']];
+const mp3=[['Escocia','Scotland'],['Irlanda','Ireland'],['Gales','Wales'],['Alemania','Germany'],['Grecia','Greece'],['Portugal','Portugal'],['México','Mexico'],['Argentina','Argentina']];
+const mp4=[['Nadé en el mar','I swam in the sea'],['Pinté un cuadro','I painted a picture'],['Jugué al voleibol','I played volleyball'],['Comí mucho','I ate a lot'],['Descansé en el hotel','I rested in the hotel'],['Viajé en tren','I travelled by train'],['Visité un castillo','I visited a castle'],['Compré regalos','I bought presents']];
+const mp5=[['Fue lo mejor de las vacaciones','It was the best part of the holiday'],['Fue lo peor','It was the worst part'],['Me encantó la comida','I loved the food'],['No me gustó el hotel','I didn\'t like the hotel'],['Fue muy relajante','It was very relaxing'],['Fue agotador','It was exhausting'],['Volveré el año que viene','I will return next year'],['Nunca quiero volver','I never want to go back']];
+
+let mState={};
+function buildMatch(gid,pairs,fbId){
+  mState[gid]={sel:null,matched:[]};
+  const sh1=[...pairs].sort(()=>Math.random()-0.5), sh2=[...pairs].sort(()=>Math.random()-0.5);
+  document.getElementById(gid).innerHTML=sh1.map((p,i)=>`<div class="ml" data-g="${gid}" data-v="${p[0]}" onclick="clkL(this,'${gid}','${p[0]}')">${p[0]}</div><div class="mr" data-g="${gid}" data-v="${sh2[i][0]}" onclick="clkR(this,'${gid}','${sh2[i][0]}')">${sh2[i][1]}</div>`).join('');
+  if(document.getElementById(fbId)) document.getElementById(fbId).textContent='';
+}
+function clkL(el,gid,val){ if(el.classList.contains('matched'))return; document.querySelectorAll(`[data-g="${gid}"].ml`).forEach(e=>e.classList.remove('selected')); el.classList.add('selected'); mState[gid].sel=val; }
+function clkR(el,gid,val){
+  if(!mState[gid].sel||el.classList.contains('matched'))return;
+  if(mState[gid].sel===val){ el.classList.add('matched'); el.textContent+=' ✅'; document.querySelector(`[data-g="${gid}"].ml[data-v="${val}"]`).classList.add('matched'); mState[gid].matched.push(val); mState[gid].sel=null; addPts(1); sectionScores[2]+=1; }
+  else{ el.classList.add('wrong-m'); setTimeout(()=>el.classList.remove('wrong-m'),700); }
+}
+function checkMatch(gid,pairs,fbId){ const m=mState[gid].matched.length; document.getElementById(fbId).textContent=`${m} / ${pairs.length} matched`; }
+buildMatch('mg1',mp1,'mg1Fb');
+buildMatch('mg2',mp2,'mg2Fb');
+buildMatch('mg3',mp3,'mg3Fb');
+buildMatch('mg4',mp4,'mg4Fb');
+buildMatch('mg5',mp5,'mg5Fb');
+
+// ====== SCRAMBLE ROUND 1 (Section 3) ======
+const scrD1=[
+  {words:['El','año','pasado','fui','a','Escocia','con','mi','familia','.']},
+  {words:['Fuimos','en','tren','porque','no','me','gusta','el','avión','.']},
+  {words:['Visité','monumentos','y','saqué','fotos','—','fue','genial','.']},
+  {words:['Pasé','quince','días','allí','y','lo','pasé','fenomenal','.']},
+];
+let scrState1={};
+function buildScramble(containerId,data,state,prefix){
+  const c=document.getElementById(containerId);
+  c.innerHTML='';
+  data.forEach((s,si)=>{
+    state[si]={placed:[],pool:[...s.words].map((w,i)=>({w,i})).sort(()=>Math.random()-0.5)};
+    const div=document.createElement('div'); div.style.marginBottom='1.3rem';
+    div.innerHTML=`<p style="font-size:0.8rem;color:#5F5E5A;margin-bottom:0.3rem">Sentence ${si+1} — click words in order:</p>
+      <div class="scramble-sentence" id="${prefix}sc-${si}"><em style="color:#B4B2A9">Build the sentence...</em></div>
+      <div class="word-tiles" id="${prefix}st-${si}"></div>
+      <div style="display:flex;gap:0.5rem"><button class="check-btn" onclick="checkScramble('${prefix}',${si},${prefix==='s1'?'scrD1':'scrD2'})">Check</button><button class="reset-btn" onclick="resetScramble('${prefix}',${si},${prefix==='s1'?'scrD1':'scrD2'})">Clear</button></div>
+      <div class="qfb" id="${prefix}fb-${si}" style="margin-top:0.3rem"></div>`;
+    c.appendChild(div);
+    buildScramblePool(prefix,si,state);
+  });
+}
+function buildScramblePool(prefix,si,state){
+  const pool=document.getElementById(prefix+'st-'+si);
+  pool.innerHTML='';
+  state[si].pool.forEach((item,pi)=>{
+    const t=document.createElement('span'); t.className='tile'; t.textContent=item.w; t.dataset.pi=pi;
+    if(state[si].placed.includes(pi)) t.classList.add('used');
+    t.onclick=()=>addScramble(prefix,si,pi,t,state); pool.appendChild(t);
+  });
+  refreshScramble(prefix,si,state);
+}
+function addScramble(prefix,si,pi,tile,state){
+  if(tile.classList.contains('used')) return;
+  state[si].placed.push(pi); tile.classList.add('used');
+  refreshScramble(prefix,si,state);
+}
+function refreshScramble(prefix,si,state){
+  const sent=document.getElementById(prefix+'sc-'+si);
+  if(state[si].placed.length===0){ sent.innerHTML='<em style="color:#B4B2A9">Build the sentence...</em>'; sent.classList.remove('filled'); return; }
+  sent.classList.add('filled');
+  sent.innerHTML=state[si].placed.map(pi=>`<span class="placed-tile" onclick="removeScramble('${prefix}',${si},${pi},${prefix==='s1'?'scrD1':'scrD2'})">${state[si].pool[pi].w}</span>`).join(' ');
+}
+function removeScramble(prefix,si,pi,data){
+  const state=prefix==='s1'?scrState1:scrState2;
+  state[si].placed=state[si].placed.filter(p=>p!==pi);
+  document.querySelector(`#${prefix}st-${si} [data-pi="${pi}"]`).classList.remove('used');
+  refreshScramble(prefix,si,state);
+}
+function checkScramble(prefix,si,data){
+  const state=prefix==='s1'?scrState1:scrState2;
+  const built=state[si].placed.map(pi=>state[si].pool[pi].w).join(' ');
+  const correct=data[si].words.join(' ');
+  const fb=document.getElementById(prefix+'fb-'+si);
+  if(built===correct){ fb.textContent='✅ Perfect!'; fb.className='qfb ok'; addPts(2); sectionScores[prefix==='s1'?2:3]+=2; }
+  else { fb.innerHTML=`❌ Correct order: <span style="color:#3B6D11">${correct}</span>`; fb.className='qfb no'; }
+}
+function resetScramble(prefix,si,data){
+  const state=prefix==='s1'?scrState1:scrState2;
+  state[si].placed=[]; buildScramblePool(prefix,si,state);
+  const fb=document.getElementById(prefix+'fb-'+si); fb.textContent=''; fb.className='qfb';
+}
+buildScramble('scrambleContainer1',scrD1,scrState1,'s1');
+
+// ====== SCRAMBLE ROUND 2 (Section 5) ======
+const scrD2=[
+  {words:['Me','encanta','montar','en','bicicleta','así','que','monté','todos','los','días','.']},
+  {words:['Mis','padres','fueron','de','compras','y','yo','descansé','.']},
+  {words:['La','comida','italiana','fue','estupenda','y','comí','mucho','.']},
+  {words:['Nunca','quiero','volver','porque','fue','un','desastre','.']},
+];
+let scrState2={};
+buildScramble('scrambleContainer2',scrD2,scrState2,'s2');
+// ====== TRUE/FALSE ======
+const tf1d=[
+  {t:'Pablo loves going on holiday.',ans:true},{t:'He went to Ireland last winter.',ans:false},
+  {t:'He went with his parents and sister.',ans:true},{t:'They travelled by plane.',ans:false},
+  {t:'He spent two weeks in Ireland.',ans:true},{t:'He went cycling.',ans:true},{t:'He had a terrible holiday.',ans:false},
+];
+const tf2d=[
+  {t:'Diego went to Portugal with his family.',ans:false},{t:'They travelled by coach.',ans:true},
+  {t:'The journey took six hours.',ans:true},{t:'He swam in the sea.',ans:false},
+  {t:'They visited a famous castle.',ans:true},{t:'He went shopping.',ans:false},
+  {t:'He thought the coach journey was a bit boring.',ans:true},
+];
+const tf3d=[
+  {t:'Beatriz went to Mexico with her brother.',ans:true},{t:'They travelled by boat.',ans:false},
+  {t:'She swam every day.',ans:true},{t:'They visited lots of monuments.',ans:false},
+  {t:'Dancing salsa was the best part of the holiday.',ans:true},{t:'She thought the trip was a disaster.',ans:false},
+];
+let tfAns={};
+function buildTF(cid,data){ tfAns[cid]={}; document.getElementById(cid).innerHTML=data.map((q,i)=>`<div class="tf-row"><div class="tf-text">${i+1}. ${q.t}</div><div class="tf-btns"><button class="tf-btn" data-tf="${cid}${i}" onclick="selTF(this,'${cid}',${i},true,${q.ans})">✓ T</button><button class="tf-btn" data-tf="${cid}${i}" onclick="selTF(this,'${cid}',${i},false,${q.ans})">✗ F</button></div></div>`).join(''); }
+function selTF(btn,cid,i,val,correct){ document.querySelectorAll(`[data-tf="${cid}${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(val===correct?'correct':'wrong'); tfAns[cid][i]=val; }
+function checkTF(cid,fbId,data){
+  let ok=0; data.forEach((q,i)=>{ if(tfAns[cid]&&tfAns[cid][i]===q.ans) ok++; });
+  document.getElementById(fbId).textContent=`${ok} / ${data.length} correct`; addPts(ok);
+  const sIdx = cid.startsWith('tf1')?3 : cid.startsWith('tf2')?4 : 5;
+  sectionScores[sIdx]+=ok;
+}
+buildTF('tf1',tf1d);
+buildTF('tf2',tf2d);
+buildTF('tf3',tf3d);
+
+// ====== MCQ ======
+const mcq1d=[
+  {q:'Where does Elena normally go on holiday?',opts:['Germany','France','Italy'],ans:'France'},
+  {q:'Who did she go to Germany with?',opts:['her family','her parents','her best friend'],ans:'her best friend'},
+  {q:'How did they travel?',opts:['by plane','by train','by car'],ans:'by train'},
+  {q:'How long did she stay?',opts:['one week','two weeks','ten days'],ans:'ten days'},
+  {q:'What did she do in the mornings?',opts:['went shopping','visited monuments and took photos','went to restaurants'],ans:'visited monuments and took photos'},
+  {q:'How did she feel about the holiday?',opts:['it was boring','it was awful','it was fantastic'],ans:'it was fantastic'},
+];
+const mcq2d=[
+  {q:'Where does Ana usually go on holiday?',opts:['Berlin','the mountains','the beach'],ans:'the beach'},
+  {q:'How many people went to Berlin?',opts:['3','4','5'],ans:'5'},
+  {q:'Why did she choose the train?',opts:['it is faster','she finds it more comfortable than the plane','it is cheaper'],ans:'she finds it more comfortable than the plane'},
+  {q:'What did they do in the mornings?',opts:['went shopping','visited museums and monuments','rested in parks'],ans:'visited museums and monuments'},
+  {q:'What does Ana love as a hobby?',opts:['dancing','photography','shopping'],ans:'photography'},
+  {q:'What does Ana say about returning to Berlin?',opts:['she wants to go back next year','she never wants to go back','she is going back next month'],ans:'she wants to go back next year'},
+];
+let mcqAns={};
+function buildMCQ(cid,data){ mcqAns[cid]={}; document.getElementById(cid).innerHTML=data.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. ${q.q}</p><div class="opts">${q.opts.map(o=>`<button class="opt" data-mq="${cid}${i}" onclick="selMCQ(this,'${cid}',${i},'${o}','${q.ans}')">${o}</button>`).join('')}</div><div class="qfb" id="mqfb${cid}${i}"></div></div>`).join(''); }
+function selMCQ(btn,cid,i,v,correct){ document.querySelectorAll(`[data-mq="${cid}${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(v===correct?'correct':'wrong'); mcqAns[cid][i]=v; }
+function checkMCQ(cid,fbId,data){
+  let ok=0; data.forEach((q,i)=>{ const fb=document.getElementById('mqfb'+cid+i); if(mcqAns[cid]&&mcqAns[cid][i]===q.ans){ok++;if(fb){fb.textContent='✅';fb.className='qfb ok';}}else if(mcqAns[cid]&&mcqAns[cid][i]){if(fb){fb.textContent=`❌ ${q.ans}`;fb.className='qfb no';}} });
+  document.getElementById(fbId).textContent=`${ok} / ${data.length} correct`; addPts(ok);
+  sectionScores[cid==='mcq1'?3:4]+=ok;
+}
+buildMCQ('mcq1',mcq1d);
+buildMCQ('mcq2',mcq2d);
+
+// ====== GAP FILL ======
+const gf1d={parts:['Me llamo Roberto. El verano pasado ',{b:'fui',o:['fui','fue','fuimos','soy']},' a Barcelona con mis amigos. ',{b:'Fuimos',o:['Fuimos','Fui','Fueron','Vamos']},' en barco y en autocar. Barcelona está en el norte de España. Fue muy ',{b:'guay',o:['guay','horrible','aburrido','fenomenal']},' — pero diferente a mis vacaciones normales. Jugué al voleibol en la playa y escuché música. Un día ',{b:'fui',o:['fue','fui','fuimos','iba']},' de excursión a Francia. ¡Lo pasé ',{b:'bomba',o:['bomba','mal','regular','bien']},'!']};
+const gf2d={parts:['Hola, soy Carmen. ',{b:'Normalmente',o:['Normalmente','El año pasado','Nunca','Porque']},' voy a la playa, pero el invierno pasado fui a la montaña con mi familia. Fuimos en ',{b:'coche',o:['avión','coche','barco','tren']},' porque vivimos cerca. Pasé una semana esquiando. Por las noches ',{b:'descansé',o:['descansé','bailé','nadé','jugué']},' en el hotel con mi familia. ',{b:'Fue',o:['Fui','Fue','Fuimos','Era']},' la primera vez que esquié — ¡fue muy divertido! Quiero volver el año que viene porque me ',{b:'encantó',o:['odió','encantó','aburrió','molestó']},' la experiencia.']};
+const gf3d={parts:['Generalmente Almudena va a Cuba de vacaciones. Va en autocar y en ',{b:'barco',o:['avión','barco','tren','coche']},' con sus padres. Le encanta ',{b:'nadar',o:['bailar','nadar','pintar','cocinar']},' en el mar. El verano pasado fue a Valencia en tren. Descansó, fue de ',{b:'compras',o:['excursión','compras','monumentos','bicicleta']},' y montó en bicicleta. Lo pasó muy ',{b:'bien',o:['mal','regular','bien','horrible']},'.']};
+function buildGF(cid,data){ document.getElementById(cid).innerHTML=data.parts.map((p,i)=>typeof p==='string'?p:`<select class="gap-sel" data-gf="${cid}${i}" data-a="${p.b}"><option value="">___</option>${p.o.map(o=>`<option>${o}</option>`).join('')}</select>`).join(''); if(document.getElementById(cid+'Fb'))document.getElementById(cid+'Fb').textContent=''; }
+function checkGF(cid,fbId,data){
+  let ok=0,tot=0; data.parts.forEach((p,i)=>{ if(typeof p==='object'){tot++; const sel=document.querySelector(`[data-gf="${cid}${i}"]`); if(!sel)return; if(sel.value===p.b){ok++;sel.className='gap-sel c';}else sel.className='gap-sel w'; } });
+  document.getElementById(fbId).textContent=`${ok} / ${tot} correct`; addPts(ok);
+  const sIdx = cid==='gf1'?3 : cid==='gf2'?4 : 5;
+  sectionScores[sIdx]+=ok;
+}
+buildGF('gf1',gf1d);
+buildGF('gf2',gf2d);
+buildGF('gf3',gf3d);
+
+// ====== TF/NM ======
+const tfnmData=[
+  {text:'Fernán normally goes to Greece on holiday.',ans:'F'},{text:'He stayed in a hotel when he went to Cuba.',ans:'NM'},
+  {text:'Last summer he travelled to Greece by car.',ans:'T'},{text:'He enjoyed the car journey.',ans:'F'},
+  {text:'He went painting while on holiday in Greece.',ans:'T'},{text:'He visited museums in Greece.',ans:'NM'},
+  {text:'He prefers Cuba to Greece.',ans:'T'},
+];
+let tfnmAnswers={};
+function buildTFNM(){
+  tfnmAnswers={};
+  document.getElementById('tfnm1').innerHTML=tfnmData.map((q,i)=>`<div class="tf-row"><div class="tf-text">${i+1}. ${q.text}</div><div class="tf-btns"><button class="tf-btn" data-tfnm="${i}" onclick="selTFNM(this,${i},'T','${q.ans}')">✓ T</button><button class="tf-btn" data-tfnm="${i}" onclick="selTFNM(this,${i},'F','${q.ans}')">✗ F</button><button class="tf-btn" data-tfnm="${i}" onclick="selTFNM(this,${i},'NM','${q.ans}')">? NM</button></div></div>`).join('');
+  document.getElementById('tfnmFb').textContent='';
+}
+function selTFNM(btn,i,val,correct){ document.querySelectorAll(`[data-tfnm="${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(val===correct?'correct':'wrong'); tfnmAnswers[i]=val; }
+function checkTFNM(){ let ok=0; tfnmData.forEach((q,i)=>{ if(tfnmAnswers[i]===q.ans) ok++; }); document.getElementById('tfnmFb').textContent=`${ok} / ${tfnmData.length} correct`; addPts(ok); sectionScores[3]+=ok; }
+buildTFNM();
+
+// ====== PERSON MATCH ======
+const personMatchD=[
+  {q:'Who travelled by plane?',ans:'Marta'},{q:'Who went on holiday alone?',ans:'Iker'},
+  {q:'Who thought the holiday was a bit boring?',ans:'Iker'},{q:'Who went with their best friend?',ans:'Sara'},
+  {q:'Who danced?',ans:'Marta'},{q:'Who ate a lot of pasta?',ans:'Sara'},
+];
+function buildPersonMatch(){
+  document.getElementById('personMatchContainer').innerHTML=personMatchD.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. ${q.q}</p><div class="opts">${['Marta','Iker','Sara'].map(o=>`<button class="opt" data-pm="${i}" onclick="selPersonMatch(this,${i},'${o}','${q.ans}')">${o}</button>`).join('')}</div><div class="qfb" id="pmfb${i}"></div></div>`).join('');
+}
+function selPersonMatch(btn,i,v,correct){ document.querySelectorAll(`[data-pm="${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(v===correct?'correct':'wrong'); personMatchAns=personMatchAns||{}; personMatchAns[i]=v; }
+let personMatchAns={};
+function checkPersonMatch(){ let ok=0; personMatchD.forEach((q,i)=>{ const fb=document.getElementById('pmfb'+i); if(personMatchAns[i]===q.ans){ok++;fb.textContent='✅';fb.className='qfb ok';}else if(personMatchAns[i]){fb.textContent=`❌ ${q.ans}`;fb.className='qfb no';} }); document.getElementById('personMatchFb').textContent=`${ok} / ${personMatchD.length} correct`; addPts(ok); sectionScores[3]+=ok; }
+buildPersonMatch();
+
+// ====== SHORT ANSWER ======
+const shortAnsD=[
+  {q:'Who did Valentina go to Mexico with?',ans:['mother','brother'],hint:'her mother and brother'},
+  {q:'How long was the flight?',ans:['twelve','12'],hint:'twelve hours'},
+  {q:'How long did she stay in Cancún?',ans:['three weeks','3 weeks'],hint:'three weeks'},
+  {q:'What was her favourite activity?',ans:['excursion'],hint:'the excursion to the Mayan ruins'},
+  {q:'What did she listen to in the evenings?',ans:['music'],hint:'Mexican music'},
+];
+function buildShortAns(){
+  document.getElementById('shortAnsContainer').innerHTML=shortAnsD.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. ${q.q}</p><input class="dictinput" id="sa${i}" placeholder="Type your answer in English..."><div class="qfb" id="safb${i}" style="margin-top:0.3rem"></div></div>`).join('');
+  document.getElementById('shortAnsFb').textContent='';
+}
+function checkShortAns(){
+  let ok=0;
+  shortAnsD.forEach((q,i)=>{ const inp=document.getElementById('sa'+i),fb=document.getElementById('safb'+i),val=inp.value.toLowerCase().trim();
+    const hit=q.ans.some(a=>val.includes(a.toLowerCase()));
+    if(hit){ok++;inp.className='dictinput ci';fb.textContent='✅ Correct!';fb.className='qfb ok';}
+    else if(val.length>0){inp.className='dictinput wi';fb.innerHTML=`❌ Expected: <span style="color:#3B6D11">${q.hint}</span>`;fb.className='qfb no';}
+  });
+  document.getElementById('shortAnsFb').textContent=`${ok} / ${shortAnsD.length} correct`; addPts(ok); sectionScores[4]+=ok;
+}
+buildShortAns();
+
+// ====== ERROR CORRECTION ======
+const errorData=[
+  {sent:'El verano pasado fue a Grecia con mis padres.',correct:'fui a Grecia',opts:['fui a Grecia','fue a Grecia','fuimos a Grecia','fuiste a Grecia']},
+  {sent:'Fuimos por avión porque me gusta viajar.',correct:'en avión',opts:['en avión','por avión','con avión','de avión']},
+  {sent:'Pasé una semana allí y lo pasé fenomenal.',correct:'✅ This sentence is correct!',opts:['✅ This sentence is correct!','lo pase fenomenal (missing accent)','lo pasé bien (not fenomenal)','pasé semana (missing una)']},
+  {sent:'Tomé el sol y visitó monumentos con mi familia.',correct:'visité',opts:['visité','visitó','visitamos','visitar']},
+  {sent:'Me gusta mucho el playa en verano.',correct:'la playa',opts:['la playa','el playa','los playas','las playa']},
+  {sent:'Fui de compras y lo pasé bomba — fue genial.',correct:'✅ This sentence is correct!',opts:['✅ This sentence is correct!','lo pasé bomba → lo pasé bien','fue genial → fue horrible','fui → fue']},
+];
+let errAnswers={};
+function buildErrors(){
+  errAnswers={};
+  document.getElementById('errorContainer').innerHTML=errorData.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. <em>${q.sent}</em> — what is wrong (or is it correct)?</p><div class="opts">${q.opts.map(o=>`<button class="opt" data-err="${i}" onclick="selErr(this,${i},'${o}','${q.correct}')">${o}</button>`).join('')}</div><div class="qfb" id="errfb${i}"></div></div>`).join('');
+}
+function selErr(btn,i,val,correct){ document.querySelectorAll(`[data-err="${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(val===correct?'correct':'wrong'); errAnswers[i]=val; }
+function checkErrors(){ let ok=0; errorData.forEach((q,i)=>{ const fb=document.getElementById('errfb'+i); if(errAnswers[i]===q.correct){ok++;fb.textContent='✅ Correct!';fb.className='qfb ok';}else if(errAnswers[i]){fb.textContent=`❌ Answer: ${q.correct}`;fb.className='qfb no';} }); document.getElementById('errorFb').textContent=`${ok} / ${errorData.length} correct`; addPts(ok); sectionScores[4]+=ok; }
+buildErrors();
+// ====== LISTEN MCQ 1 ======
+const lmqD=[
+  {q:'When did Carlos go to Italy?',opts:['last summer','last winter','last year'],ans:'last summer'},
+  {q:'How was the coach journey?',opts:['fantastic','boring','horrible and very long'],ans:'horrible and very long'},
+  {q:'What did he do on the beach in Bari?',opts:['went cycling','sunbathed','took photos'],ans:'sunbathed'},
+  {q:'How did he feel about visiting monuments?',opts:['it was great','it was a disaster','it was boring'],ans:'it was a disaster'},
+  {q:'What did he do in Naples?',opts:['went to the beach','played volleyball','went shopping'],ans:'went shopping'},
+  {q:'What did Carlos think of the Italian restaurant?',opts:['it was a disaster','it was boring','it was great'],ans:'it was great'},
+];
+let lmqAns={};
+function buildLMCQ(){ lmqAns={}; document.getElementById('lmcq').innerHTML=lmqD.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. ${q.q}</p><div class="opts">${q.opts.map(o=>`<button class="opt" data-lm="${i}" onclick="selLMQ(this,${i},'${o}','${q.ans}')">${o}</button>`).join('')}</div><div class="qfb" id="lmfb${i}"></div></div>`).join(''); document.getElementById('lmcqFb').textContent=''; }
+function selLMQ(btn,i,v,correct){ document.querySelectorAll(`[data-lm="${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(v===correct?'correct':'wrong'); lmqAns[i]=v; }
+function checkLMCQ(){ let ok=0; lmqD.forEach((q,i)=>{ const fb=document.getElementById('lmfb'+i); if(lmqAns[i]===q.ans){ok++;fb.textContent='✅';fb.className='qfb ok';}else if(lmqAns[i]){fb.textContent=`❌ ${q.ans}`;fb.className='qfb no';} }); document.getElementById('lmcqFb').textContent=`${ok} / ${lmqD.length} correct`; addPts(ok); sectionScores[5]+=ok; }
+buildLMCQ();
+
+// ====== LISTEN MCQ 2 ======
+const lmq2D=[
+  {q:'Who did Beatriz travel with?',opts:['her parents','her brother','her best friend'],ans:'her brother'},
+  {q:'How did they travel?',opts:['by plane','by boat','by car'],ans:'by plane'},
+  {q:'How long did they stay?',opts:['ten days','two weeks','one month'],ans:'ten days'},
+  {q:'What was the best part of the holiday?',opts:['visiting monuments','dancing salsa','swimming'],ans:'dancing salsa'},
+  {q:'Why did they not visit monuments?',opts:['no time','too expensive','her brother doesn\'t like them'],ans:'her brother doesn\'t like them'},
+  {q:'What did they do on the last day?',opts:['went swimming','bought presents','visited a castle'],ans:'bought presents'},
+];
+let lmq2Ans={};
+function buildLMCQ2(){ lmq2Ans={}; document.getElementById('lmcq2').innerHTML=lmq2D.map((q,i)=>`<div class="q-row"><p class="q-text">${i+1}. ${q.q}</p><div class="opts">${q.opts.map(o=>`<button class="opt" data-lm2="${i}" onclick="selLMQ2(this,${i},'${o}','${q.ans}')">${o}</button>`).join('')}</div><div class="qfb" id="lm2fb${i}"></div></div>`).join(''); document.getElementById('lmcq2Fb').textContent=''; }
+function selLMQ2(btn,i,v,correct){ document.querySelectorAll(`[data-lm2="${i}"]`).forEach(b=>b.classList.remove('correct','wrong')); btn.classList.add(v===correct?'correct':'wrong'); lmq2Ans[i]=v; }
+function checkLMCQ2(){ let ok=0; lmq2D.forEach((q,i)=>{ const fb=document.getElementById('lm2fb'+i); if(lmq2Ans[i]===q.ans){ok++;fb.textContent='✅';fb.className='qfb ok';}else if(lmq2Ans[i]){fb.textContent=`❌ ${q.ans}`;fb.className='qfb no';} }); document.getElementById('lmcq2Fb').textContent=`${ok} / ${lmq2D.length} correct`; addPts(ok); sectionScores[5]+=ok; }
+buildLMCQ2();
+
+// ====== LISTEN TABLE ======
+const ltD=[
+  {sp:'Laura',where:'Portugal',how:'boat',who:'grandparents',act:'sunbathed / rested',op:'good'},
+  {sp:'Felipe',where:'Argentina',how:'plane',who:'alone',act:'excursion / cycling',op:'brilliant'},
+  {sp:'Amaya',where:'Toledo',how:'coach',who:'class',act:'monuments / photos',op:'wonderful'},
+  {sp:'Javi',where:'Ireland',how:'boat and train',who:'sister',act:'music / dancing',op:'cool / guay'},
+];
+function buildLT(){ document.getElementById('ltBody').innerHTML=ltD.map((r,ri)=>`<tr><td><strong>${r.sp}</strong></td>${['where','how','who','act','op'].map(f=>`<td><input class="linput" id="lt${ri}${f}" placeholder="..."></td>`).join('')}</tr>`).join(''); document.getElementById('ltFb').textContent=''; }
+function checkLT(){
+  let ok=0,tot=0;
+  ltD.forEach((r,ri)=>{
+    [['where',r.where],['how',r.how],['who',r.who],['act',r.act],['op',r.op]].forEach(([f,correct])=>{
+      const inp=document.getElementById('lt'+ri+f); if(!inp)return; tot++;
+      const val=inp.value.trim().toLowerCase(), keys=correct.toLowerCase().split(/[\s\/,]+/).filter(w=>w.length>2);
+      if(keys.some(k=>val.includes(k))){ok++;inp.className='linput ci';}else if(val.length>0) inp.className='linput wi';
+    });
+  });
+  document.getElementById('ltFb').textContent=`${ok} / ${tot} boxes correct`; addPts(ok); sectionScores[5]+=ok;
+}
+buildLT();
+
+// ====== SUMMARY ======
+function buildSummary(){
+  document.getElementById('finalScore').textContent=totalPts;
+  document.getElementById('summaryGrid').innerHTML=sectionNames.map((n,i)=>`<div class="sum-card"><div class="sc-num">${sectionScores[i]}</div><div class="sc-label">${n}</div></div>`).join('');
+  const weak=sectionNames.filter((_,i)=>sectionScores[i]<5);
+  document.getElementById('focusAdvice').innerHTML = weak.length===0
+    ? '<div class="success">🎉 Excellent work! You scored well across every section. Make sure you can still produce the key past tense verb forms and opinion phrases from memory without the options in front of you.</div>'
+    : '<p>Based on your scores, spend extra time reviewing:</p><ul style="margin-top:0.5rem;padding-left:1.2rem">'+weak.map(w=>`<li><strong>${w}</strong> — go back to that section and retry the activities</li>`).join('')+'</ul><div class="tip" style="margin-top:0.7rem">💡 The most important things to know for the test: <strong>fui, fue, fuimos</strong> (ir/ser) · past tense activities · opinion phrases · transport and country vocabulary.</div>';
+}
+</script>
+</body>
+</html>
